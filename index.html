@@ -289,7 +289,7 @@ if(FB_ON){
 
     // Listener em tempo real: 1 leitura na conexão + 1 por mudança remota
     docRef.onSnapshot(snap=>{
-      if(!snap.exists()){return;}
+      if(!snap.exists){return;}
       if(_fbWritePending){return;} // ignora eco da própria escrita
       const remote=snap.data();
       if(JSON.stringify(remote)!==JSON.stringify(S)){
