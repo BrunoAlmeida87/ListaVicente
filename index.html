@@ -9,6 +9,7 @@
 <!-- Firebase SDK (compat) — carregado mesmo sem config para não bloquear -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics-compat.js"></script>
 
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
@@ -178,12 +179,13 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 //  Substitua os valores a partir do console do Firebase.
 // ══════════════════════════════════════════════════════
 const FB_CONFIG = {
-  apiKey:            "COLE_SUA_API_KEY",
-  authDomain:        "SEU_PROJETO.firebaseapp.com",
-  projectId:         "SEU_PROJETO_ID",
-  storageBucket:     "SEU_PROJETO.appspot.com",
-  messagingSenderId: "SEU_SENDER_ID",
-  appId:             "SEU_APP_ID"
+  apiKey:            "AIzaSyDpfFCbuxji7lCYPgpr0uUQUSuhX8IDmLE",
+  authDomain:        "lista-vicente.firebaseapp.com",
+  projectId:         "lista-vicente",
+  storageBucket:     "lista-vicente.firebasestorage.app",
+  messagingSenderId: "392963251344",
+  appId:             "1:392963251344:web:76b425839e53084c840c15",
+  measurementId:     "G-PB7J5J4MHN"
 };
 // ══════════════════════════════════════════════════════
 
@@ -279,6 +281,7 @@ let db=null, docRef=null, _fbWritePending=false;
 if(FB_ON){
   try{
     firebase.initializeApp(FB_CONFIG);
+    firebase.analytics();
     db = firebase.firestore();
     // Cache offline para não re-ler desnecessariamente
     db.enablePersistence({synchronizeTabs:true}).catch(()=>{});
