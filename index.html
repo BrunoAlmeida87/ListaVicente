@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎂 1 Aninho do Vicente! 🎉</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --purple:       #7C3AED;
+            --purple-mid:   #9333EA;
+            --purple-light: #A78BFA;
+            --pink:         #EC4899;
+            --pink-light:   #F9A8D4;
+            --amber:        #F59E0B;
+            --green:        #10B981;
+            --bg:           #F5F0FF;
+            --white:        #FFFFFF;
+            --gray-100:     #F3F4F6;
+            --gray-200:     #E5E7EB;
+            --gray-400:     #9CA3AF;
+            --gray-500:     #6B7280;
+            --gray-800:     #1F2937;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: var(--bg);
+            background-image:
+                radial-gradient(circle at 10% 20%, rgba(167,139,250,.18) 0%, transparent 50%),
+                radial-gradient(circle at 90% 80%, rgba(249,168,212,.18) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(245,158,11,.08) 0%, transparent 70%);
+            min-height: 100vh;
+        }
+
+        /* ===== HEADER ===== */
+        header {
+            background: linear-gradient(135deg, #4C1D95 0%, #7C3AED 45%, #DB2777 100%);
+            color: #fff;
+            text-align: center;
+            padding: 1.75rem 1rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 24px rgba(76,29,149,.35);
+        }
+        header::before, header::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255,255,255,.07);
+        }
+        header::before { width: 160px; height: 160px; top: -50px; right: -40px; }
+        header::after  { width: 120px; height: 120px; bottom: -40px; left: -30px; }
+
+        .hdr-deco    { font-size: 1.4rem; letter-spacing: .4rem; margin-bottom: .4rem; opacity: .9; }
+        .hdr-title   { font-family: 'Fredoka One', cursive; font-size: clamp(2rem,5vw,3.2rem); text-shadow: 0 3px 10px rgba(0,0,0,.3); margin-bottom: .2rem; }
+        .hdr-sub     { font-size: 1rem; font-weight: 700; opacity: .85; }
+        .hdr-deco-bt { font-size: 1.1rem; letter-spacing: .55rem; margin-top: .7rem; opacity: .75; }
+
+        /* ===== COUNTERS ===== */
+        .counters {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: .85rem;
+            padding: 1.4rem 1rem .6rem;
+        }
+        .cnt-card {
+            background: var(--white);
+            border-radius: 1.2rem;
+            padding: 1.1rem 1.8rem;
+            text-align: center;
+            box-shadow: 0 4px 18px rgba(0,0,0,.08);
+            min-width: 130px;
+            transition: transform .2s, box-shadow .2s;
+        }
+        .cnt-card:hover { transform: translateY(-4px); box-shadow: 0 8px 28px rgba(0,0,0,.12); }
+        .cnt-card.ca { border-top: 4px solid var(--purple); }
+        .cnt-card.cc { border-top: 4px solid var(--pink); }
+        .cnt-card.ct { border-top: 4px solid var(--amber); }
+        .cnt-num  { font-family: 'Fredoka One', cursive; font-size: 2.8rem; line-height: 1; margin-bottom: .15rem; }
+        .ca .cnt-num { color: var(--purple); }
+        .cc .cnt-num { color: var(--pink); }
+        .ct .cnt-num { color: var(--amber); }
+        .cnt-lbl  { font-size: .75rem; font-weight: 800; color: var(--gray-500); text-transform: uppercase; letter-spacing: .05em; }
+
+        /* ===== CONTAINER ===== */
+        .wrap { max-width: 1200px; margin: 0 auto; padding: .8rem 1rem 3rem; }
+
+        /* ===== FORMS GRID ===== */
+        .forms-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.75rem;
+        }
+        @media (max-width: 640px) { .forms-row { grid-template-columns: 1fr; } }
+
+        .form-box {
+            background: var(--white);
+            border-radius: 1.2rem;
+            padding: 1.2rem;
+            box-shadow: 0 2px 12px rgba(0,0,0,.07);
+        }
+        .form-title {
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.2rem;
+            margin-bottom: .9rem;
+            display: flex;
+            align-items: center;
+            gap: .45rem;
+        }
+        .form-box.fa .form-title { color: var(--purple); }
+        .form-box.fc .form-title { color: var(--pink); }
+
+        .field { margin-bottom: .65rem; }
+        .field label {
+            display: block;
+            font-size: .72rem;
+            font-weight: 800;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            margin-bottom: .3rem;
+        }
+        .field input, .field select {
+            width: 100%;
+            padding: .55rem .8rem;
+            border: 2px solid var(--gray-200);
+            border-radius: .7rem;
+            font-family: 'Nunito', sans-serif;
+            font-size: .88rem;
+            font-weight: 600;
+            color: var(--gray-800);
+            background: var(--gray-100);
+            transition: border-color .2s, background .2s;
+            outline: none;
+            appearance: auto;
+        }
+        .field input:focus, .field select:focus {
+            border-color: var(--purple);
+            background: var(--white);
+        }
+
+        .btn-add {
+            width: 100%;
+            padding: .65rem;
+            border: none;
+            border-radius: .7rem;
+            font-family: 'Nunito', sans-serif;
+            font-size: .92rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all .2s;
+            margin-top: .15rem;
+            letter-spacing: .02em;
+        }
+        .btn-add.purple { background: linear-gradient(135deg, var(--purple), var(--purple-light)); color: #fff; }
+        .btn-add.pink   { background: linear-gradient(135deg, var(--pink), var(--pink-light));     color: #fff; }
+        .btn-add:hover  { transform: translateY(-2px); box-shadow: 0 5px 16px rgba(0,0,0,.2); }
+        .btn-add:active { transform: translateY(0); }
+
+        /* ===== SECTION HEADING ===== */
+        .sect { margin-bottom: 1.4rem; }
+        .sect-head {
+            display: flex;
+            align-items: center;
+            gap: .6rem;
+            margin-bottom: .85rem;
+            padding-bottom: .65rem;
+            border-bottom: 3px solid;
+        }
+        .sect-head.sa { border-color: var(--purple); }
+        .sect-head.sc { border-color: var(--pink); }
+        .sect-head h2 { font-family: 'Fredoka One', cursive; font-size: 1.45rem; }
+        .sect-head.sa h2 { color: var(--purple); }
+        .sect-head.sc h2 { color: var(--pink); }
+        .sect-badge {
+            color: #fff;
+            font-weight: 800;
+            font-size: .75rem;
+            padding: .18rem .55rem;
+            border-radius: 999px;
+            margin-left: auto;
+        }
+        .sa .sect-badge { background: var(--purple); }
+        .sc .sect-badge { background: var(--pink); }
+
+        /* ===== GUEST GRID ===== */
+        .g-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+            gap: .45rem;
+        }
+        @media (max-width: 480px) { .g-grid { grid-template-columns: 1fr; } }
+
+        /* ===== GUEST CARD – compact / list-like ===== */
+        .g-card {
+            background: var(--white);
+            border-radius: .65rem;
+            padding: .52rem .75rem;
+            display: flex;
+            align-items: center;
+            gap: .55rem;
+            box-shadow: 0 1px 5px rgba(0,0,0,.06);
+            transition: box-shadow .18s, transform .15s;
+            border-left: 3px solid;
+        }
+        .g-card.ga { border-left-color: var(--purple); }
+        .g-card.gc { border-left-color: var(--pink); }
+        .g-card:hover { box-shadow: 0 3px 12px rgba(0,0,0,.1); transform: translateX(2px); }
+
+        .g-ico  { font-size: 1.05rem; flex-shrink: 0; line-height: 1; }
+        .g-info { flex: 1; min-width: 0; line-height: 1.35; }
+        .g-name {
+            font-weight: 700;
+            font-size: .88rem;
+            color: var(--gray-800);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .g-age     { font-size: .7rem; color: var(--gray-500); font-weight: 600; }
+        .g-parents { font-size: .68rem; color: var(--purple-light); font-weight: 700; font-style: italic; }
+
+        .g-acts { display: flex; gap: .28rem; flex-shrink: 0; }
+
+        .bi {
+            width: 25px;
+            height: 25px;
+            border: none;
+            border-radius: .4rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .78rem;
+            transition: all .15s;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 700;
+        }
+        .bi.edit   { background: #EDE9FE; color: var(--purple); }
+        .bi.edit:hover   { background: var(--purple); color: #fff; }
+        .bi.del    { background: #FEE2E2; color: #EF4444; }
+        .bi.del:hover    { background: #EF4444; color: #fff; }
+        .bi.save   { background: #D1FAE5; color: var(--green); }
+        .bi.save:hover   { background: var(--green); color: #fff; }
+        .bi.cancel { background: var(--gray-200); color: var(--gray-500); }
+        .bi.cancel:hover { background: var(--gray-500); color: #fff; }
+
+        .edit-inp {
+            border: 1.5px solid var(--purple);
+            border-radius: .4rem;
+            padding: 2px 6px;
+            font-family: 'Nunito', sans-serif;
+            font-size: .86rem;
+            font-weight: 700;
+            color: var(--gray-800);
+            outline: none;
+            width: 100%;
+            background: #fff;
+        }
+
+        /* Empty */
+        .empty {
+            text-align: center;
+            color: var(--gray-400);
+            font-size: .88rem;
+            padding: 1.8rem;
+            grid-column: 1 / -1;
+            font-style: italic;
+        }
+
+        /* ===== NOTIFICATION ===== */
+        #notif {
+            position: fixed;
+            bottom: 1.4rem;
+            right: 1.4rem;
+            padding: .7rem 1.15rem;
+            border-radius: .7rem;
+            color: #fff;
+            font-weight: 700;
+            font-size: .88rem;
+            box-shadow: 0 8px 24px rgba(0,0,0,.22);
+            transform: translateY(130%);
+            transition: transform .3s cubic-bezier(.34,1.56,.64,1);
+            z-index: 9999;
+            max-width: 270px;
+        }
+        #notif.show { transform: translateY(0); }
+        #notif.ok  { background: linear-gradient(135deg, var(--green), #34D399); }
+        #notif.err { background: linear-gradient(135deg, #EF4444, #F87171); }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--gray-100); }
+        ::-webkit-scrollbar-thumb { background: var(--purple-light); border-radius: 999px; }
+    </style>
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<header>
+    <div class="hdr-deco">🎈 🎊 🎁 🎀 🎉 🎈</div>
+    <div class="hdr-title">🎂 1 Aninho do Vicente! 🎂</div>
+    <div class="hdr-sub">Lista de Convidados da Festinha</div>
+    <div class="hdr-deco-bt">⭐ 🌟 ✨ 💫 🌟 ⭐</div>
+</header>
+
+<!-- ===== COUNTERS ===== -->
+<div class="counters">
+    <div class="cnt-card ca">
+        <div class="cnt-num" id="cA">0</div>
+        <div class="cnt-lbl">👨‍👩 Adultos</div>
+    </div>
+    <div class="cnt-card cc">
+        <div class="cnt-num" id="cC">0</div>
+        <div class="cnt-lbl">👶 Crianças</div>
+    </div>
+    <div class="cnt-card ct">
+        <div class="cnt-num" id="cT">0</div>
+        <div class="cnt-lbl">🎊 Total Geral</div>
+    </div>
+</div>
+
+<!-- ===== MAIN ===== -->
+<div class="wrap">
+
+    <!-- FORMS -->
+    <div class="forms-row">
+        <!-- Adult -->
+        <div class="form-box fa">
+            <div class="form-title">👤 Adicionar Adulto</div>
+            <div class="field">
+                <label>Nome</label>
+                <input id="iAN" type="text" placeholder="Nome do convidado...">
+            </div>
+            <button class="btn-add purple" onclick="addAdult()">+ Adicionar Adulto</button>
+        </div>
+        <!-- Child -->
+        <div class="form-box fc">
+            <div class="form-title">👶 Adicionar Criança</div>
+            <div class="field">
+                <label>Nome</label>
+                <input id="iCN" type="text" placeholder="Nome da criança...">
+            </div>
+            <div class="field">
+                <label>Idade</label>
+                <input id="iCA" type="text" placeholder="Ex: 5 anos, 3 meses...">
+            </div>
+            <div class="field">
+                <label>Pai / Mãe — obrigatório</label>
+                <select id="sP1"><option value="">Selecione o 1º responsável...</option></select>
+            </div>
+            <div class="field">
+                <label>2º Pai / Mãe — opcional</label>
+                <select id="sP2"><option value="">Nenhum (opcional)...</option></select>
+            </div>
+            <button class="btn-add pink" onclick="addChild()">+ Adicionar Criança</button>
+        </div>
+    </div>
+
+    <!-- ADULTS SECTION -->
+    <div class="sect">
+        <div class="sect-head sa">
+            <span>👨‍👩</span>
+            <h2>Adultos</h2>
+            <span class="sect-badge" id="bA">0</span>
+        </div>
+        <div class="g-grid" id="lA"></div>
+    </div>
+
+    <!-- CHILDREN SECTION -->
+    <div class="sect">
+        <div class="sect-head sc">
+            <span>👶</span>
+            <h2>Crianças</h2>
+            <span class="sect-badge" id="bC">0</span>
+        </div>
+        <div class="g-grid" id="lC"></div>
+    </div>
+
+</div>
+
+<!-- NOTIFICATION -->
+<div id="notif"></div>
+
+<script>
+// ==================== INITIAL DATA ====================
+const ADULTS0 = [
+    {id:'a1', name:'Evelin'},       {id:'a2', name:'Bruno'},
+    {id:'a3', name:'Rosele'},       {id:'a4', name:'Eluelson'},
+    {id:'a5', name:'Emile'},        {id:'a6', name:'Elcio'},
+    {id:'a7', name:'Claudia'},      {id:'a8', name:'Beatriz'},
+    {id:'a9', name:'Eliete'},       {id:'a10',name:'Claudia Márcia'},
+    {id:'a11',name:'Marcelo'},      {id:'a12',name:'Raphaela'},
+    {id:'a13',name:'Marcio'},       {id:'a14',name:'Bárbara'},
+    {id:'a15',name:'Helena'},       {id:'a16',name:'Ricardo'},
+    {id:'a17',name:'Mãe do Ricardo'},{id:'a18',name:'Aninha'},
+    {id:'a19',name:'Heloísa'},      {id:'a20',name:'Chiquinho'},
+    {id:'a21',name:'Juliana'},      {id:'a22',name:'Billy'},
+    {id:'a23',name:'Fernanda'},     {id:'a24',name:'Cadu'},
+    {id:'a25',name:'Cida'},         {id:'a26',name:'Severino'},
+    {id:'a27',name:'Felipe'},       {id:'a28',name:'Fátima'},
+    {id:'a29',name:'Eliane'},       {id:'a30',name:'Tia Sandra'},
+    {id:'a31',name:'Bruna'},        {id:'a32',name:'Petter'},
+    {id:'a33',name:'Mariana'},      {id:'a34',name:'Rafael'},
+    {id:'a35',name:'Pamela'},       {id:'a36',name:'André'},
+    {id:'a37',name:'Camila'},       {id:'a38',name:'Marina'},
+    {id:'a39',name:'Paula'},        {id:'a40',name:'Marina'},
+    {id:'a41',name:'João Pedro'},   {id:'a42',name:'Rita'},
+    {id:'a43',name:'Paulo'},        {id:'a44',name:'Gabriel'},
+    {id:'a45',name:'Aline'},        {id:'a46',name:'Marcelo'},
+    {id:'a47',name:'Thiago'},       {id:'a48',name:'Felipe'},
+    {id:'a49',name:'Fernanda'}
+];
+
+const CHILDREN0 = [
+    {id:'c1',name:'Pedrinho', age:'9 anos',  parents:[]},
+    {id:'c2',name:'Bernardo', age:'3 anos',  parents:[]},
+    {id:'c3',name:'Antonio',  age:'7 anos',  parents:[]},
+    {id:'c4',name:'Olivia',   age:'5 anos',  parents:[]},
+    {id:'c5',name:'Isabela',  age:'4 anos',  parents:[]},
+    {id:'c6',name:'Julia',    age:'5 anos',  parents:[]},
+    {id:'c7',name:'Joaquim',  age:'1 ano',   parents:[]},
+    {id:'c8',name:'Sebastian',age:'3 meses', parents:[]}
+];
+
+// ==================== STATE ====================
+const KA = 'vp_adults', KC = 'vp_children';
+
+function load(key, def) {
+    try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : JSON.parse(JSON.stringify(def)); }
+    catch(e) { return JSON.parse(JSON.stringify(def)); }
+}
+
+let adults   = load(KA, ADULTS0);
+let children = load(KC, CHILDREN0);
+
+function persist() {
+    try {
+        localStorage.setItem(KA, JSON.stringify(adults));
+        localStorage.setItem(KC, JSON.stringify(children));
+    } catch(e) {}
+}
+
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+
+// ==================== HELPERS ====================
+function esc(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function parentStr(ids) {
+    if (!ids || !ids.length) return '';
+    const names = ids.map(id => { const a = adults.find(x => x.id === id); return a ? a.name : null; }).filter(Boolean);
+    return names.length ? 'Filho(a) de ' + names.join(' e ') : '';
+}
+
+// ==================== RENDER ====================
+function renderAdults() {
+    const el = document.getElementById('lA');
+    if (!adults.length) { el.innerHTML = '<div class="empty">Nenhum adulto cadastrado.</div>'; return; }
+    el.innerHTML = adults.map(a => `
+        <div class="g-card ga" id="gc-${a.id}">
+            <span class="g-ico">👤</span>
+            <div class="g-info" id="gi-${a.id}">
+                <div class="g-name">${esc(a.name)}</div>
+            </div>
+            <div class="g-acts">
+                <button class="bi edit"  onclick="startEdit('${a.id}','adult')" title="Editar nome">✏️</button>
+                <button class="bi del"   onclick="remAdult('${a.id}')"          title="Remover">🗑</button>
+            </div>
+        </div>`).join('');
+}
+
+function renderChildren() {
+    const el = document.getElementById('lC');
+    if (!children.length) { el.innerHTML = '<div class="empty">Nenhuma criança cadastrada.</div>'; return; }
+    el.innerHTML = children.map(c => {
+        const ps = parentStr(c.parents);
+        return `
+        <div class="g-card gc" id="gc-${c.id}">
+            <span class="g-ico">👶</span>
+            <div class="g-info" id="gi-${c.id}">
+                <div class="g-name">${esc(c.name)}</div>
+                <div class="g-age">${esc(c.age)}</div>
+                ${ps ? `<div class="g-parents">${esc(ps)}</div>` : ''}
+            </div>
+            <div class="g-acts">
+                <button class="bi edit"  onclick="startEdit('${c.id}','child')" title="Editar nome">✏️</button>
+                <button class="bi del"   onclick="remChild('${c.id}')"          title="Remover">🗑</button>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+function updateCounters() {
+    const na = adults.length, nc = children.length;
+    document.getElementById('cA').textContent = na;
+    document.getElementById('cC').textContent = nc;
+    document.getElementById('cT').textContent = na + nc;
+    document.getElementById('bA').textContent = na;
+    document.getElementById('bC').textContent = nc;
+}
+
+function updateSelects() {
+    const opts = adults.map(a => `<option value="${a.id}">${esc(a.name)}</option>`).join('');
+    document.getElementById('sP1').innerHTML = '<option value="">Selecione o 1º responsável...</option>' + opts;
+    document.getElementById('sP2').innerHTML = '<option value="">Nenhum (opcional)...</option>'         + opts;
+}
+
+function render() {
+    renderAdults();
+    renderChildren();
+    updateCounters();
+    updateSelects();
+}
+
+// ==================== ADD ====================
+function addAdult() {
+    const inp = document.getElementById('iAN');
+    const name = inp.value.trim();
+    if (!name) { notify('Informe o nome do convidado!', 'err'); return; }
+    adults.push({ id: uid(), name });
+    inp.value = '';
+    persist(); render();
+    notify(`${name} adicionado(a)! 🎉`);
+}
+
+function addChild() {
+    const name = document.getElementById('iCN').value.trim();
+    const age  = document.getElementById('iCA').value.trim();
+    const p1   = document.getElementById('sP1').value;
+    const p2   = document.getElementById('sP2').value;
+
+    if (!name) { notify('Informe o nome da criança!',       'err'); return; }
+    if (!age)  { notify('Informe a idade!',                 'err'); return; }
+    if (!p1)   { notify('Selecione pelo menos 1 responsável!','err'); return; }
+
+    const parents = [p1];
+    if (p2 && p2 !== p1) parents.push(p2);
+
+    children.push({ id: uid(), name, age, parents });
+    document.getElementById('iCN').value = '';
+    document.getElementById('iCA').value = '';
+    document.getElementById('sP1').value = '';
+    document.getElementById('sP2').value = '';
+
+    persist(); render();
+    notify(`${name} adicionado(a)! 🎊`);
+}
+
+// ==================== EDIT ====================
+function startEdit(id, type) {
+    const item = type === 'adult' ? adults.find(x => x.id === id) : children.find(x => x.id === id);
+    if (!item) return;
+
+    const info = document.getElementById(`gi-${id}`);
+    const card = document.getElementById(`gc-${id}`);
+    const nameDiv = info.querySelector('.g-name');
+
+    nameDiv.innerHTML = `<input class="edit-inp" id="ei-${id}" value="${esc(item.name)}"
+        onkeydown="handleKey(event,'${id}','${type}')">`;
+
+    card.querySelector('.g-acts').innerHTML = `
+        <button class="bi save"   onclick="saveEdit('${id}','${type}')" title="Salvar">✓</button>
+        <button class="bi cancel" onclick="render()"                    title="Cancelar">✕</button>`;
+
+    const inp = document.getElementById(`ei-${id}`);
+    inp.focus(); inp.select();
+}
+
+function handleKey(e, id, type) {
+    if (e.key === 'Enter')  saveEdit(id, type);
+    if (e.key === 'Escape') render();
+}
+
+function saveEdit(id, type) {
+    const inp = document.getElementById(`ei-${id}`);
+    if (!inp) return;
+    const name = inp.value.trim();
+    if (!name) { notify('Nome não pode ficar vazio!', 'err'); return; }
+
+    const list = type === 'adult' ? adults : children;
+    const item = list.find(x => x.id === id);
+    if (item) item.name = name;
+
+    persist(); render();
+    notify('Nome atualizado! ✨');
+}
+
+// ==================== REMOVE ====================
+function remAdult(id) {
+    const a = adults.find(x => x.id === id);
+    if (!a || !confirm(`Remover "${a.name}" da lista?`)) return;
+    adults   = adults.filter(x => x.id !== id);
+    children = children.map(c => ({ ...c, parents: c.parents.filter(p => p !== id) }));
+    persist(); render();
+    notify(`${a.name} removido(a).`);
+}
+
+function remChild(id) {
+    const c = children.find(x => x.id === id);
+    if (!c || !confirm(`Remover "${c.name}" da lista?`)) return;
+    children = children.filter(x => x.id !== id);
+    persist(); render();
+    notify(`${c.name} removido(a).`);
+}
+
+// ==================== NOTIFICATION ====================
+let _nt;
+function notify(msg, type = 'ok') {
+    const el = document.getElementById('notif');
+    el.textContent = msg;
+    el.className = `notif ${type} show`;
+    clearTimeout(_nt);
+    _nt = setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+// ==================== KEYBOARD SHORTCUTS ====================
+document.getElementById('iAN').addEventListener('keydown', e => { if (e.key === 'Enter') addAdult(); });
+document.getElementById('iCN').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('iCA').focus(); });
+document.getElementById('iCA').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('sP1').focus(); });
+
+// ==================== INIT ====================
+render();
+</script>
+</body>
+</html>
