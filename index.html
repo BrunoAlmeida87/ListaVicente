@@ -6,6 +6,9 @@
 <title>Festa do Vicente · 1 ano</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
+<!-- SheetJS — exportação .xlsx real -->
+<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+
 <!-- Firebase SDK (compat) — carregado mesmo sem config para não bloquear -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
@@ -87,11 +90,15 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 }
 
 /* ── FAMILY GROUP ── */
-.fgroup{border:1px solid var(--border);border-radius:var(--r);overflow:hidden;background:var(--surface)}
-.fgroup-parents{display:flex;flex-direction:column;gap:2px;padding:4px;background:#FAFBFC;border-bottom:1px dashed var(--border)}
+/* position:relative + z-index garante que o grupo pinte sobre as acards ao redor */
+.fgroup{border:1px solid var(--border2);border-radius:var(--r);overflow:hidden;background:var(--surface);box-shadow:var(--sh1);position:relative;z-index:1}
+.fgroup-parents{display:flex;flex-direction:column;gap:2px;padding:4px;background:#F8FAFC}
+.fgroup-parents.has-kids{border-bottom:1px dashed var(--border)}
 .fgroup-children{padding:5px 9px;display:flex;flex-wrap:wrap;gap:4px;align-items:center}
 .fgroup-lbl{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-right:2px;flex-shrink:0}
 .chip{display:inline-flex;align-items:center;gap:3px;background:var(--bg);border:1px solid var(--border);border-radius:999px;padding:2px 8px;font-size:11px;color:var(--text2);font-weight:500}
+/* drop highlight no botão +Adulto */
+.btn-ac.dover-ac{background:var(--accent-bg);border-color:var(--accent);border-style:solid;color:var(--accent)}
 
 /* ── CHILD CARD ── */
 .ccard{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--green);border-radius:var(--rs);padding:7px 9px;cursor:grab;user-select:none;transition:box-shadow .15s;touch-action:none}
@@ -144,8 +151,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .hdr-acts{display:flex;align-items:center;gap:6px;flex-shrink:0}
 
 /* ── GROUP HEADER + COUPLE ── */
-.fgroup{box-shadow:var(--sh1)}
-.fgroup-hdr{font-size:10px;font-weight:700;color:var(--text2);letter-spacing:.03em;padding:6px 9px 2px;display:flex;align-items:center;gap:4px}
+.fgroup-hdr{font-size:11px;font-weight:700;color:var(--text2);letter-spacing:.02em;padding:7px 10px 5px;display:flex;align-items:center;gap:4px;background:var(--bg);border-bottom:1px solid var(--border)}
 .bi.on{color:#EC4899;background:#FCE7F3}
 
 /* ── COLLAPSE CHEVRON ── */
@@ -156,8 +162,9 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 /* ── FAB + ACTION SHEET (mobile) ── */
 .fab{display:none;position:fixed;right:16px;bottom:16px;width:54px;height:54px;border-radius:50%;background:var(--accent);color:#fff;border:none;font-size:28px;font-weight:300;line-height:1;box-shadow:0 8px 22px rgba(99,102,241,.5);cursor:pointer;z-index:150;align-items:center;justify-content:center;transition:transform .15s}
 .fab:active{transform:scale(.9)}
-.sheet-ov{display:none;position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:160;opacity:0;transition:opacity .2s}
-.sheet-ov.open{opacity:1}
+/* pointer-events:none quando fechada — sem isso a overlay invisível bloqueia todos os toques na página */
+.sheet-ov{display:none;position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:160;opacity:0;pointer-events:none;transition:opacity .2s}
+.sheet-ov.open{opacity:1;pointer-events:auto}
 .sheet{position:absolute;left:0;right:0;bottom:0;background:var(--surface);border-radius:20px 20px 0 0;padding:10px 14px calc(16px + env(safe-area-inset-bottom));box-shadow:0 -8px 30px rgba(0,0,0,.18);transform:translateY(110%);transition:transform .28s cubic-bezier(.34,1.4,.5,1);display:flex;flex-direction:column;gap:7px}
 .sheet-ov.open .sheet{transform:translateY(0)}
 .sheet-grab{width:40px;height:4px;border-radius:999px;background:var(--border2);margin:2px auto 8px}
@@ -225,9 +232,9 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
   <div class="sep"></div>
   <div id="sync-st" class="sync-st off" title="Status Firebase"></div>
   <div class="hdr-acts">
-    <button class="btn" onclick="downloadTemplate()" title="Baixar modelo CSV para Excel">↓ Modelo Excel</button>
-    <button class="btn" onclick="document.getElementById('csv-file').click()" title="Importar CSV preenchido">↑ Importar</button>
-    <button class="btn" onclick="exportJSON()" title="Exportar todos os dados em JSON">↓ JSON</button>
+    <button class="btn" onclick="downloadTemplate()" title="Baixar modelo .xlsx para preencher">↓ Modelo Excel</button>
+    <button class="btn" onclick="document.getElementById('csv-file').click()" title="Importar CSV preenchido">↑ Importar CSV</button>
+    <button class="btn" onclick="exportXLSX()" title="Exportar lista completa em Excel">↓ Excel</button>
     <button class="btn btn-p" onclick="openModal('adult')">+ Adulto</button>
     <button class="btn btn-g" onclick="openModal('child')">+ Criança</button>
   </div>
@@ -246,8 +253,8 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
     <button class="sheet-btn" onclick="sheetGo('category')">🏷️ <span>Nova categoria</span></button>
     <div class="sheet-div"></div>
     <button class="sheet-btn" onclick="sheetImport()">⬆️ <span>Importar CSV</span></button>
-    <button class="sheet-btn" onclick="sheetTpl()">📄 <span>Baixar modelo Excel</span></button>
-    <button class="sheet-btn" onclick="sheetJson()">💾 <span>Exportar JSON</span></button>
+    <button class="sheet-btn" onclick="sheetTpl()">📄 <span>Baixar modelo Excel (.xlsx)</span></button>
+    <button class="sheet-btn" onclick="sheetXlsx()">💾 <span>Exportar lista Excel</span></button>
   </div>
 </div>
 
@@ -493,7 +500,7 @@ function renderFGroup(g){
             :(hasKids?'👨‍👩‍👧 Família':'👥 Grupo');
   const chips=g.childIds.map(id=>{const c=S.children.find(x=>x.id===id);return c?`<span class="chip">👶 ${esc(c.name)}, ${esc(c.age)}</span>`:''}).join('');
   const kidsRow=hasKids?`<div class="fgroup-children"><span class="fgroup-lbl">Filhos</span>${chips}</div>`:'';
-  return `<div class="fgroup"><div class="fgroup-hdr">${label}</div><div class="fgroup-parents">${g.members.map(m=>renderACard(m)).join('')}</div>${kidsRow}</div>`;
+  return `<div class="fgroup"><div class="fgroup-hdr">${label}</div><div class="fgroup-parents${hasKids?' has-kids':''}">${g.members.map(m=>renderACard(m)).join('')}</div>${kidsRow}</div>`;
 }
 
 function renderCol(cat){
@@ -502,10 +509,10 @@ function renderCol(cat){
   const body=grps.length?grps.map(g=>g.type==='solo'?renderACard(g.adult):renderFGroup(g)).join(''):`<div class="empty-col">Arraste convidados aqui</div>`;
   const sys=cat.id==='cat0';
   const btns=sys?'':`<button class="bi" onclick="editCat('${cat.id}')">✏</button><button class="bi d" onclick="delCat('${cat.id}')">✕</button>`;
-  return `<div class="col" id="col-${cat.id}">
-    <div class="col-hdr" onclick="toggleCol(event,'${cat.id}')"><div class="col-dot" style="background:${cat.color}"></div><div class="col-name">${esc(cat.name)}</div><div class="col-cnt">${cnt}</div>${btns}<span class="col-chev">▾</span></div>
+  return `<div class="col" id="col-${cat.id}" style="border-left:3px solid ${cat.color}">
+    <div class="col-hdr" onclick="toggleCol(event,'${cat.id}')"><div class="col-dot" style="background:${cat.color}"></div><div class="col-name" style="color:${cat.color}">${esc(cat.name)}</div><div class="col-cnt">${cnt}</div>${btns}<span class="col-chev">▾</span></div>
     <div class="col-body" id="cb-${cat.id}" ondragover="colOver(event,'${cat.id}')" ondragleave="colLeave(event,'${cat.id}')" ondrop="colDrop(event,'${cat.id}')">${body}</div>
-    <div class="col-ft"><button class="btn-ac" onclick="openModal('adult','${cat.id}')">＋ Adulto</button></div>
+    <div class="col-ft"><button class="btn-ac" data-cat="${cat.id}" ondragover="btnAcOver(event,'${cat.id}')" ondragleave="btnAcLeave(event)" ondrop="btnAcDrop(event,'${cat.id}')" onclick="openModal('adult','${cat.id}')">＋ Adulto</button></div>
   </div>`;
 }
 
@@ -550,9 +557,19 @@ function dStart(e,type,id){
   },0);
 }
 function dEnd(){
-  document.querySelectorAll('.dragging,.child-mode,.child-hover,.dover,.dover-reorder')
-    .forEach(el=>el.classList.remove('dragging','child-mode','child-hover','dover','dover-reorder'));
+  document.querySelectorAll('.dragging,.child-mode,.child-hover,.dover,.dover-reorder,.dover-ac')
+    .forEach(el=>el.classList.remove('dragging','child-mode','child-hover','dover','dover-reorder','dover-ac'));
   drag=null;
+}
+function btnAcOver(e,catId){
+  if(!drag||drag.type!=='adult')return;
+  e.preventDefault();e.stopPropagation();
+  e.currentTarget.classList.add('dover-ac');
+}
+function btnAcLeave(e){e.currentTarget.classList.remove('dover-ac');}
+function btnAcDrop(e,catId){
+  e.currentTarget.classList.remove('dover-ac');
+  colDrop(e,catId);
 }
 function colOver(e,catId){if(!drag||drag.type!=='adult')return;e.preventDefault();e.stopPropagation();document.getElementById('cb-'+catId)?.classList.add('dover');}
 function colLeave(e,catId){const el=document.getElementById('cb-'+catId);if(el&&!el.contains(e.relatedTarget))el.classList.remove('dover');}
@@ -615,11 +632,12 @@ document.addEventListener('touchmove',e=>{
   if(tCl)tCl.style.display='none';
   const under=document.elementFromPoint(t.clientX,t.clientY);
   if(tCl)tCl.style.display='';
-  document.querySelectorAll('.child-hover,.dover-reorder,.dover').forEach(el=>el.classList.remove('child-hover','dover-reorder','dover'));
+  document.querySelectorAll('.child-hover,.dover-reorder,.dover,.dover-ac').forEach(el=>el.classList.remove('child-hover','dover-reorder','dover','dover-ac'));
   if(tD.type==='child'){under?.closest('.acard')?.classList.add('child-hover');}
-  else{const tc=under?.closest('.acard'),tb=under?.closest('.col-body');
+  else{const tc=under?.closest('.acard'),tb=under?.closest('.col-body'),bac=under?.closest('.btn-ac');
     if(tc&&tc.id!=='ac-'+tD.id)tc.classList.add('dover-reorder');
-    else if(tb)tb.classList.add('dover');}
+    else if(tb)tb.classList.add('dover');
+    else if(bac)bac.classList.add('dover-ac');}
 },{passive:false});
 document.addEventListener('touchend',e=>{
   if(!tD)return;clearTimeout(tD.timer);
@@ -630,14 +648,15 @@ document.addEventListener('touchend',e=>{
   const under=document.elementFromPoint(t.clientX,t.clientY);
   if(tD.type==='child'){const tc=under?.closest('.acard');if(tc)linkChild(tD.id,tc.id.replace('ac-',''));}
   else{
-    const tc=under?.closest('.acard'),tb=under?.closest('.col-body');
+    const tc=under?.closest('.acard'),tb=under?.closest('.col-body'),bac=under?.closest('.btn-ac');
     const fake={preventDefault:()=>{},stopPropagation:()=>{}};
     const sv=drag;drag=tD;
     if(tc&&tc.id!=='ac-'+tD.id)acDrop(fake,tc.id.replace('ac-',''));
+    else if(bac){const cid=bac.dataset.cat;if(cid)colDrop(fake,cid);}
     else if(tb){const cid=tb.id.replace('cb-','');if(cid!=='children')colDrop(fake,cid);}
     drag=sv;
   }
-  document.querySelectorAll('.child-mode,.child-hover,.dover,.dover-reorder').forEach(el=>el.classList.remove('child-mode','child-hover','dover','dover-reorder'));
+  document.querySelectorAll('.child-mode,.child-hover,.dover,.dover-reorder,.dover-ac').forEach(el=>el.classList.remove('child-mode','child-hover','dover','dover-reorder','dover-ac'));
   tD=null;
 },{passive:true});
 
@@ -685,7 +704,7 @@ function sheetClick(e){if(e.target.id==='sheet-ov')closeSheet();}
 function sheetGo(t){closeSheet();openModal(t);}
 function sheetImport(){closeSheet();document.getElementById('csv-file').click();}
 function sheetTpl(){closeSheet();downloadTemplate();}
-function sheetJson(){closeSheet();exportJSON();}
+function sheetXlsx(){closeSheet();exportXLSX();}
 
 // ── INLINE EDIT ───────────────────────────────────────
 function editAdult(e,id){
@@ -824,21 +843,55 @@ function exportJSON(){
   notify('Dados exportados!');
 }
 
-// ── CSV TEMPLATE ──────────────────────────────────────
+// ── EXCEL TEMPLATE ────────────────────────────────────
 function downloadTemplate(){
   const catNames=S.categories.map(c=>c.name).join(' | ');
+  const header=['tipo','nome','idade','categoria','responsavel_1','responsavel_2'];
   const rows=[
-    ['tipo','nome','idade','categoria','responsavel_1','responsavel_2'],
-    [`# INSTRUCOES: tipo = adulto  ou  crianca`,'','','','',''],
-    [`# categorias: ${catNames}`,'','','','',''],
-    [`# responsavel_1 e _2: nome exato do adulto ja cadastrado (so para criancas)`,'','','','',''],
-    ['','','','','',''],
+    header,
     ['adulto','Exemplo Adulto','','Parentes Evelin','',''],
     ['adulto','Outro Adulto','','Amigos Bruno','',''],
     ['crianca','Exemplo Jr.','5 anos','','Exemplo Adulto','Outro Adulto'],
   ];
-  dl('﻿'+rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\r\n'),'text/csv;charset=utf-8',`modelo-convidados-${now()}.csv`);
-  notify('Modelo baixado! Abra no Excel, preencha e importe.');
+  const wb=XLSX.utils.book_new();
+  const ws=XLSX.utils.aoa_to_sheet(rows);
+  // Larguras de coluna
+  ws['!cols']=[{wch:10},{wch:24},{wch:12},{wch:22},{wch:24},{wch:24}];
+  // Célula de instrução na linha 6 (índice 5)
+  XLSX.utils.sheet_add_aoa(ws,[
+    [''],
+    ['INSTRUÇÕES:','tipo = adulto  ou  crianca'],
+    ['Categorias:',catNames],
+    ['responsavel_1 / _2:','nome exato do adulto já cadastrado (só para crianças)'],
+  ],{origin:'A6'});
+  XLSX.utils.book_append_sheet(wb,ws,'Convidados');
+  XLSX.writeFile(wb,`modelo-convidados-${now()}.xlsx`);
+  notify('Modelo .xlsx baixado! Abra no Excel, preencha e importe.');
+}
+
+// ── EXCEL EXPORT (dados completos) ────────────────────
+function exportXLSX(){
+  const wb=XLSX.utils.book_new();
+  // Aba adultos
+  const adults=[['nome','categoria','parceiro','filhos']].concat(
+    S.adults.map(a=>{
+      const cat=S.categories.find(c=>c.id===a.catId);
+      const partner=a.partnerId?S.adults.find(x=>x.id===a.partnerId)?.name||'':'';
+      const kids=(a.childrenIds||[]).map(id=>S.children.find(c=>c.id===id)?.name||'').filter(Boolean).join(', ');
+      return[a.name,cat?.name||'',partner,kids];
+    })
+  );
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(adults),'Adultos');
+  // Aba crianças
+  const children=[['nome','idade','pais']].concat(
+    S.children.map(c=>{
+      const pais=S.adults.filter(a=>(a.childrenIds||[]).includes(c.id)).map(a=>a.name).join(' e ');
+      return[c.name,c.age,pais];
+    })
+  );
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(children),'Crianças');
+  XLSX.writeFile(wb,`lista-vicente-${now()}.xlsx`);
+  notify('Lista exportada em .xlsx!');
 }
 
 // ── CSV IMPORT ────────────────────────────────────────
