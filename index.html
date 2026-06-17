@@ -284,7 +284,7 @@ if(FB_ON){
     firebase.analytics();
     db = firebase.firestore();
     // Cache offline para não re-ler desnecessariamente
-    db.enablePersistence({synchronizeTabs:true}).catch(()=>{});
+    db.enablePersistence().catch(()=>{});
     docRef = db.collection('festa').doc('vicente');
 
     // Listener em tempo real: 1 leitura na conexão + 1 por mudança remota
