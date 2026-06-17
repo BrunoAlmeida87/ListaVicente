@@ -140,24 +140,101 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 ::-webkit-scrollbar{width:4px;height:4px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:999px}
+
+/* ── HEADER ACTIONS WRAPPER ── */
+.hdr-acts{display:flex;align-items:center;gap:6px;flex-shrink:0}
+
+/* ── GROUP HEADER + COUPLE ── */
+.fgroup{box-shadow:var(--sh1)}
+.fgroup-hdr{font-size:10px;font-weight:700;color:var(--text2);letter-spacing:.03em;padding:6px 9px 2px;display:flex;align-items:center;gap:4px}
+.bi.on{color:#EC4899;background:#FCE7F3}
+
+/* ── COLLAPSE CHEVRON ── */
+.col-chev{display:none;font-size:11px;color:var(--text3);transition:transform .2s;flex-shrink:0;margin-left:2px}
+.col.collapsed .col-chev{transform:rotate(-90deg)}
+.col.collapsed .col-body,.col.collapsed .col-ft{display:none}
+
+/* ── FAB + ACTION SHEET (mobile) ── */
+.fab{display:none;position:fixed;right:16px;bottom:16px;width:54px;height:54px;border-radius:50%;background:var(--accent);color:#fff;border:none;font-size:28px;font-weight:300;line-height:1;box-shadow:0 8px 22px rgba(99,102,241,.5);cursor:pointer;z-index:150;align-items:center;justify-content:center;transition:transform .15s}
+.fab:active{transform:scale(.9)}
+.sheet-ov{display:none;position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:160;opacity:0;transition:opacity .2s}
+.sheet-ov.open{opacity:1}
+.sheet{position:absolute;left:0;right:0;bottom:0;background:var(--surface);border-radius:20px 20px 0 0;padding:10px 14px calc(16px + env(safe-area-inset-bottom));box-shadow:0 -8px 30px rgba(0,0,0,.18);transform:translateY(110%);transition:transform .28s cubic-bezier(.34,1.4,.5,1);display:flex;flex-direction:column;gap:7px}
+.sheet-ov.open .sheet{transform:translateY(0)}
+.sheet-grab{width:40px;height:4px;border-radius:999px;background:var(--border2);margin:2px auto 8px}
+.sheet-btn{display:flex;align-items:center;gap:11px;width:100%;padding:14px;border:1px solid var(--border);border-radius:13px;background:var(--surface);font-family:inherit;font-size:15px;font-weight:600;color:var(--text);cursor:pointer;text-align:left}
+.sheet-btn:active{background:var(--bg)}
+.sheet-btn.p{background:var(--accent-bg);border-color:#C7D2FE;color:var(--accent)}
+.sheet-btn.g{background:var(--green-bg);border-color:var(--green-bd);color:#059669}
+.sheet-div{height:1px;background:var(--border);margin:3px 0}
+
+/* ════ MOBILE LAYOUT ════ */
+@media(max-width:768px){
+  :root{--r:12px}
+  .hdr{height:50px;padding:0 12px;gap:6px}
+  .brand{font-size:14px}
+  .stats{gap:8px;font-size:11px}
+  .hdr-acts{display:none}
+  .fab{display:flex}
+  .sheet-ov{display:block}
+
+  .board{flex-direction:column;align-items:stretch;overflow-x:hidden;overflow-y:auto;padding:10px 10px 92px;gap:9px}
+  .col{width:100%;max-height:none;border-radius:var(--r)}
+  .col-hdr{cursor:pointer;padding:12px 13px}
+  .col-name{font-size:14px}
+  .col-chev{display:block}
+  .col-body{max-height:none;padding:8px;gap:6px}
+  .col-ft{padding:8px}
+  .btn-newcol{width:100%;height:46px;font-size:13px}
+
+  .acard,.ccard{padding:10px 11px;border-radius:10px}
+  .card-name,.child-name{font-size:14px}
+  .avatar{width:28px;height:28px;font-size:11px}
+  .card-sub{padding-left:34px;font-size:12px}
+  .bi{width:32px;height:32px;font-size:16px}
+  .card-acts{gap:5px}
+  .move-sel{font-size:12px;min-height:34px;margin-top:7px}
+  .btn-ac{min-height:44px;font-size:13px}
+  .chip{font-size:12px;padding:3px 9px}
+
+  #notif{bottom:84px;left:16px;right:16px;max-width:none;text-align:center}
+  .modal{border-radius:16px}
+}
 </style>
 </head>
 <body>
 
 <header class="hdr">
-  <div class="brand">🎂 Festa do Vicente <small>· 1 ano</small></div>
+  <div class="brand">🎂 <span class="brand-t">Festa do Vicente</span> <small>· 1 ano</small></div>
   <div class="stats"><span><b id="hA">0</b> adultos</span><span><b id="hC">0</b> crianças</span><span><b id="hT">0</b> total</span></div>
   <div class="sep"></div>
   <div id="sync-st" class="sync-st off" title="Status Firebase"></div>
-  <button class="btn" onclick="downloadTemplate()" title="Baixar modelo CSV para Excel">↓ Modelo Excel</button>
-  <button class="btn" onclick="document.getElementById('csv-file').click()" title="Importar CSV preenchido">↑ Importar</button>
-  <button class="btn" onclick="exportJSON()" title="Exportar todos os dados em JSON">↓ JSON</button>
-  <button class="btn btn-p" onclick="openModal('adult')">+ Adulto</button>
-  <button class="btn btn-g" onclick="openModal('child')">+ Criança</button>
+  <div class="hdr-acts">
+    <button class="btn" onclick="downloadTemplate()" title="Baixar modelo CSV para Excel">↓ Modelo Excel</button>
+    <button class="btn" onclick="document.getElementById('csv-file').click()" title="Importar CSV preenchido">↑ Importar</button>
+    <button class="btn" onclick="exportJSON()" title="Exportar todos os dados em JSON">↓ JSON</button>
+    <button class="btn btn-p" onclick="openModal('adult')">+ Adulto</button>
+    <button class="btn btn-g" onclick="openModal('child')">+ Criança</button>
+  </div>
 </header>
 
 <input type="file" id="csv-file" accept=".csv,.txt" style="display:none" onchange="handleImport(this)">
 <div class="board" id="board"></div>
+
+<!-- Botão flutuante + menu de ações (mobile) -->
+<button class="fab" onclick="toggleSheet()" aria-label="Adicionar">＋</button>
+<div class="sheet-ov" id="sheet-ov" onclick="sheetClick(event)">
+  <div class="sheet">
+    <div class="sheet-grab"></div>
+    <button class="sheet-btn p" onclick="sheetGo('adult')">👤 <span>Adicionar adulto</span></button>
+    <button class="sheet-btn g" onclick="sheetGo('child')">👶 <span>Adicionar criança</span></button>
+    <button class="sheet-btn" onclick="sheetGo('category')">🏷️ <span>Nova categoria</span></button>
+    <div class="sheet-div"></div>
+    <button class="sheet-btn" onclick="sheetImport()">⬆️ <span>Importar CSV</span></button>
+    <button class="sheet-btn" onclick="sheetTpl()">📄 <span>Baixar modelo Excel</span></button>
+    <button class="sheet-btn" onclick="sheetJson()">💾 <span>Exportar JSON</span></button>
+  </div>
+</div>
 
 <div class="overlay" id="overlay" onclick="overlayClick(event)">
   <div class="modal">
@@ -340,21 +417,36 @@ function save(){saveLocal();syncToFB();}
 // ── DRAG STATE ────────────────────────────────────────
 let drag=null;
 
-// ── FAMILY GROUPS ─────────────────────────────────────
+// ── FAMILY / COUPLE GROUPS ────────────────────────────
+// Conecta adultos que: (a) são casal (partnerId) OU (b) compartilham filhos.
 function getGroups(catId){
   const list=S.adults.filter(a=>a.catId===catId);
+  const byId=Object.fromEntries(list.map(a=>[a.id,a]));
   const done=new Set();const out=[];
   for(const a of list){
     if(done.has(a.id))continue;
-    const kids=a.childrenIds||[];
-    if(!kids.length){out.push({type:'solo',adult:a});done.add(a.id);continue;}
-    const co=list.filter(b=>!done.has(b.id)&&b.id!==a.id&&(b.childrenIds||[]).some(c=>kids.includes(c)));
-    if(co.length){
-      const mem=[a,...co];
-      const allK=[...new Set(mem.flatMap(m=>m.childrenIds||[]))];
-      out.push({type:'family',members:mem,childIds:allK});
-      mem.forEach(m=>done.add(m.id));
-    } else{out.push({type:'solo',adult:a});done.add(a.id);}
+    const stack=[a];const members=[];done.add(a.id);
+    while(stack.length){
+      const cur=stack.pop();members.push(cur);
+      // parceiro(a)
+      if(cur.partnerId&&byId[cur.partnerId]&&!done.has(cur.partnerId)){
+        done.add(cur.partnerId);stack.push(byId[cur.partnerId]);
+      }
+      // co-pais (filhos em comum)
+      const kids=cur.childrenIds||[];
+      if(kids.length){
+        for(const b of list){
+          if(done.has(b.id))continue;
+          if((b.childrenIds||[]).some(k=>kids.includes(k))){done.add(b.id);stack.push(b);}
+        }
+      }
+    }
+    const childIds=[...new Set(members.flatMap(m=>m.childrenIds||[]))];
+    if(members.length<2&&!childIds.length){out.push({type:'solo',adult:members[0]});}
+    else{
+      const isCouple=members.length===2&&members[0].partnerId===members[1].id&&members[1].partnerId===members[0].id;
+      out.push({type:'group',members,childIds,isCouple});
+    }
   }
   return out;
 }
@@ -371,8 +463,9 @@ function renderACard(a){
       <div class="avatar" style="background:${nameColor(a.name)}">${esc(initials(a.name))}</div>
       <div class="card-name" id="an-${a.id}">${esc(a.name)}</div>
       <div class="card-acts">
-        <button class="bi" onclick="editAdult(event,'${a.id}')">✏</button>
-        <button class="bi d" onclick="delAdult(event,'${a.id}')">✕</button>
+        <button class="bi${a.partnerId?' on':''}" title="${a.partnerId?'Desfazer casal':'Formar casal'}" onclick="coupleAdult(event,'${a.id}')">💑</button>
+        <button class="bi" title="Editar" onclick="editAdult(event,'${a.id}')">✏</button>
+        <button class="bi d" title="Remover" onclick="delAdult(event,'${a.id}')">✕</button>
       </div>
     </div>${kHtml}
     <select class="move-sel" onchange="moveAdult(event,'${a.id}')"><option value="">⤴ Mover para...</option>${catOpts}</select>
@@ -380,9 +473,12 @@ function renderACard(a){
 }
 
 function renderFGroup(g){
+  const hasKids=g.childIds.length>0;
+  const label=g.isCouple?(hasKids?'💑 Casal · pais':'💑 Casal')
+            :(hasKids?'👨‍👩‍👧 Família':'👥 Grupo');
   const chips=g.childIds.map(id=>{const c=S.children.find(x=>x.id===id);return c?`<span class="chip">👶 ${esc(c.name)}, ${esc(c.age)}</span>`:''}).join('');
-  return `<div class="fgroup"><div class="fgroup-parents">${g.members.map(m=>renderACard(m)).join('')}</div>
-    <div class="fgroup-children"><span class="fgroup-lbl">Filhos</span>${chips||'<span style="font-size:11px;color:var(--text3);font-style:italic">nenhum vinculado</span>'}</div></div>`;
+  const kidsRow=hasKids?`<div class="fgroup-children"><span class="fgroup-lbl">Filhos</span>${chips}</div>`:'';
+  return `<div class="fgroup"><div class="fgroup-hdr">${label}</div><div class="fgroup-parents">${g.members.map(m=>renderACard(m)).join('')}</div>${kidsRow}</div>`;
 }
 
 function renderCol(cat){
@@ -392,7 +488,7 @@ function renderCol(cat){
   const sys=cat.id==='cat0';
   const btns=sys?'':`<button class="bi" onclick="editCat('${cat.id}')">✏</button><button class="bi d" onclick="delCat('${cat.id}')">✕</button>`;
   return `<div class="col" id="col-${cat.id}">
-    <div class="col-hdr"><div class="col-dot" style="background:${cat.color}"></div><div class="col-name">${esc(cat.name)}</div><div class="col-cnt">${cnt}</div>${btns}</div>
+    <div class="col-hdr" onclick="toggleCol(event,'${cat.id}')"><div class="col-dot" style="background:${cat.color}"></div><div class="col-name">${esc(cat.name)}</div><div class="col-cnt">${cnt}</div>${btns}<span class="col-chev">▾</span></div>
     <div class="col-body" id="cb-${cat.id}" ondragover="colOver(event,'${cat.id}')" ondragleave="colLeave(event,'${cat.id}')" ondrop="colDrop(event,'${cat.id}')">${body}</div>
     <div class="col-ft"><button class="btn-ac" onclick="openModal('adult','${cat.id}')">＋ Adulto</button></div>
   </div>`;
@@ -414,8 +510,8 @@ function renderChildCol(){
       <div class="child-parents">${esc(pt)}</div>
     </div>`;
   }).join('')||`<div class="empty-col">Nenhuma criança</div>`;
-  return `<div class="col chlcol">
-    <div class="col-hdr"><div class="col-dot" style="background:var(--green)"></div><div class="col-name">Crianças</div><div class="col-cnt">${S.children.length}</div></div>
+  return `<div class="col chlcol" id="col-children">
+    <div class="col-hdr" onclick="toggleCol(event,'children')"><div class="col-dot" style="background:var(--green)"></div><div class="col-name">Crianças</div><div class="col-cnt">${S.children.length}</div><span class="col-chev">▾</span></div>
     <div class="col-body" id="cb-children">${cards}</div>
     <div class="col-ft"><button class="btn-ac" onclick="openModal('child')" style="border-color:var(--green);color:var(--green)">＋ Criança</button></div>
   </div>`;
@@ -449,7 +545,12 @@ function colDrop(e,catId){
   e.preventDefault();e.stopPropagation();
   if(!drag||drag.type!=='adult')return;
   const a=S.adults.find(x=>x.id===drag.id);
-  if(a){a.catId=catId;save();render();notify('Movido para '+S.categories.find(c=>c.id===catId)?.name);}
+  if(a){setAdultCat(a,catId);save();render();notify('Movido para '+S.categories.find(c=>c.id===catId)?.name);}
+}
+// Move o adulto (e o parceiro, se houver) para a categoria
+function setAdultCat(a,catId){
+  a.catId=catId;
+  if(a.partnerId){const p=S.adults.find(x=>x.id===a.partnerId);if(p)p.catId=catId;}
 }
 function acOver(e,aid){
   if(!drag)return;e.preventDefault();e.stopPropagation();
@@ -464,7 +565,7 @@ function acDrop(e,aid){
     const di=S.adults.findIndex(a=>a.id===drag.id);
     const [moved]=S.adults.splice(di,1);
     const newTi=S.adults.findIndex(a=>a.id===aid);
-    moved.catId=S.adults[newTi]?.catId||moved.catId;
+    setAdultCat(moved,S.adults[newTi]?.catId||moved.catId);
     S.adults.splice(newTi,0,moved);
     save();render();
   }
@@ -539,8 +640,37 @@ function linkChild(cid,aid){
 function moveAdult(e,id){
   const catId=e.target.value;if(!catId)return;
   const a=S.adults.find(x=>x.id===id);
-  if(a){a.catId=catId;save();render();notify('Movido para '+S.categories.find(c=>c.id===catId)?.name);}
+  if(a){setAdultCat(a,catId);save();render();notify('Movido para '+S.categories.find(c=>c.id===catId)?.name);}
 }
+
+// ── COUPLE / COLLAPSE ─────────────────────────────────
+function coupleAdult(e,id){
+  e.stopPropagation();
+  const a=S.adults.find(x=>x.id===id);if(!a)return;
+  if(a.partnerId){
+    const p=S.adults.find(x=>x.id===a.partnerId);
+    if(confirm(`Desfazer casal de ${a.name}${p?' e '+p.name:''}?`)){
+      if(p)delete p.partnerId;delete a.partnerId;
+      save();render();notify('Casal desfeito');
+    }
+    return;
+  }
+  openModal('couple',id);
+}
+function toggleCol(e,id){
+  if(!window.matchMedia('(max-width:768px)').matches)return;
+  if(e.target.closest('.bi'))return;
+  document.getElementById('col-'+id)?.classList.toggle('collapsed');
+}
+
+// ── MOBILE ACTION SHEET ───────────────────────────────
+function toggleSheet(){document.getElementById('sheet-ov').classList.toggle('open');}
+function closeSheet(){document.getElementById('sheet-ov').classList.remove('open');}
+function sheetClick(e){if(e.target.id==='sheet-ov')closeSheet();}
+function sheetGo(t){closeSheet();openModal(t);}
+function sheetImport(){closeSheet();document.getElementById('csv-file').click();}
+function sheetTpl(){closeSheet();downloadTemplate();}
+function sheetJson(){closeSheet();exportJSON();}
 
 // ── INLINE EDIT ───────────────────────────────────────
 function editAdult(e,id){
@@ -571,6 +701,7 @@ function delAdult(e,id){
   e.stopPropagation();const a=S.adults.find(x=>x.id===id);
   if(!a||!confirm(`Remover "${a.name}"?`))return;
   S.adults=S.adults.filter(x=>x.id!==id);
+  S.adults.forEach(x=>{if(x.partnerId===id)delete x.partnerId;});
   S.children.forEach(c=>{c.parentIds=(c.parentIds||[]).filter(p=>p!==id);});
   save();render();notify(`${a.name} removido(a)`);
 }
@@ -597,6 +728,7 @@ function openModal(type,arg){
   if(type==='adult')mCtx.defCat=arg||'cat0';
   if(type==='editCategory')mCtx.catId=arg;
   const ti=document.getElementById('mtitle'),bd=document.getElementById('mbody'),ok=document.getElementById('mok');
+  ok.style.display='';
   if(type==='adult'){
     ti.textContent='Adicionar Adulto';ok.textContent='Adicionar';
     const opts=S.categories.map(c=>`<option value="${c.id}"${c.id===mCtx.defCat?' selected':''}>${esc(c.name)}</option>`).join('');
@@ -609,6 +741,15 @@ function openModal(type,arg){
     <div class="field"><label class="lbl">Idade</label><input class="inp" id="mi-age" placeholder="Ex: 5 anos, 3 meses"></div>
     <div class="field"><label class="lbl">Pai / Mãe 1 (opcional)</label><select class="sel" id="mi-p1"><option value="">— nenhum —</option>${po}</select></div>
     <div class="field"><label class="lbl">Pai / Mãe 2 (opcional)</label><select class="sel" id="mi-p2"><option value="">— nenhum —</option>${po}</select></div>`;
+  } else if(type==='couple'){
+    mCtx.aId=arg;const a=S.adults.find(x=>x.id===arg);
+    ti.textContent='Formar Casal';ok.textContent='Vincular';
+    const opts=S.adults.filter(x=>x.id!==arg&&!x.partnerId).map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join('');
+    bd.innerHTML=opts
+      ?`<div class="field"><label class="lbl">Parceiro(a) de ${esc(a?.name||'')}</label><select class="sel" id="mi-partner">${opts}</select></div>
+        <p style="font-size:12px;color:var(--text2);line-height:1.45;margin-top:2px">💑 Os dois serão agrupados juntos e movidos para a mesma categoria.</p>`
+      :`<p style="font-size:13px;color:var(--text2);line-height:1.5">Não há adultos disponíveis. Todos já estão em um casal ou não há outros cadastrados.</p>`;
+    if(!opts)ok.style.display='none';
   } else if(type==='category'||type==='editCategory'){
     const isE=type==='editCategory';const cat=isE?S.categories.find(c=>c.id===mCtx.catId):null;
     ti.textContent=isE?'Editar Categoria':'Nova Categoria';ok.textContent=isE?'Salvar':'Criar';
@@ -639,6 +780,12 @@ function confirmModal(){
     S.children.push({id:cid,name,age,parentIds:pids});
     pids.forEach(pid=>{const a=S.adults.find(x=>x.id===pid);if(a){if(!a.childrenIds)a.childrenIds=[];if(!a.childrenIds.includes(cid))a.childrenIds.push(cid);}});
     save();closeModal();render();notify(`${name} adicionado(a)`);
+  } else if(t==='couple'){
+    const pid=document.getElementById('mi-partner').value;
+    const a=S.adults.find(x=>x.id===mCtx.aId),p=S.adults.find(x=>x.id===pid);
+    if(!a||!p){notify('Selecione um parceiro(a)','err');return;}
+    a.partnerId=p.id;p.partnerId=a.id;p.catId=a.catId;
+    save();closeModal();render();notify(`${a.name} e ${p.name} agora são um casal 💑`);
   } else if(t==='category'){
     const name=document.getElementById('mi-catname').value.trim();const color=document.getElementById('mi-color').value;
     if(!name){notify('Informe o nome','err');return;}
