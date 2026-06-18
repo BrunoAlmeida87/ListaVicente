@@ -655,7 +655,7 @@ function confirmModal(){
     const name=document.getElementById('mi-name').value.trim(),catId=document.getElementById('mi-cat').value,status=document.getElementById('mi-status').value;
     if(!name){notify('Informe o nome','err');return}
     if(t==='adult'){S.adults.push({id:uid(),name,catId,status,childrenIds:[]});notify(`${name} adicionado(a)`);}
-    else{const a=adultById(mCtx.arg);if(a)Object.assign(a,{name,catId,status});notify('Convidado atualizado');}
+    else{const a=adultById(mCtx.arg);if(a){a.name=name;a.status=status;setAdultCat(a,catId);}notify('Convidado atualizado');}
     save();closeModal();renderAll();
   }else if(t==='child'||t==='editChild'){
     const name=document.getElementById('mi-name').value.trim(),age=document.getElementById('mi-age').value.trim(),p1=document.getElementById('mi-p1').value,p2=document.getElementById('mi-p2').value;
