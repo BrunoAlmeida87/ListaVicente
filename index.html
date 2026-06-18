@@ -18,16 +18,19 @@
   --r:10px;--rs:7px
 }
 html{overflow-x:hidden}
-body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg);color:var(--text);min-height:100dvh;-webkit-tap-highlight-color:transparent}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg);color:var(--text);min-height:100dvh;-webkit-tap-highlight-color:transparent;overflow-x:hidden;max-width:100vw}
 button,input,select{font-family:inherit}
 
 /* HEADER */
 .hdr{background:var(--surface);border-bottom:1px solid var(--border);padding:0 16px;height:52px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:30}
-.brand{font-size:15px;font-weight:700;white-space:nowrap;color:var(--text)}
+.brand{font-size:15px;font-weight:700;white-space:nowrap;color:var(--text);flex-shrink:1;min-width:0;overflow:hidden;text-overflow:ellipsis}
 .brand small{font-weight:500;color:var(--text3);margin-left:4px;font-size:12px}
-.sep{flex:1;min-width:6px}
-.stats{display:flex;gap:12px;font-size:12px;color:var(--text3);white-space:nowrap}
-.stats b{color:var(--text2);font-weight:700}
+.sep{flex:1;min-width:4px}
+.stats{display:flex;gap:6px;white-space:nowrap;flex-shrink:0}
+.stats .stat{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600;color:var(--text2);background:var(--surface2);border:1px solid var(--border2);padding:3px 9px;border-radius:999px}
+.stats .stat b{color:var(--text);font-weight:800}
+.stats .tot{background:var(--accent-bg);border-color:var(--accent-bd);color:var(--accent)}
+.stats .tot b{color:var(--accent)}
 .hdr-acts{display:flex;align-items:center;gap:8px}
 .btn{padding:7px 13px;border-radius:var(--rs);border:1px solid var(--border2);background:var(--surface);font-size:13px;font-weight:600;color:var(--text2);cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:5px;white-space:nowrap;line-height:1;min-height:32px}
 .btn:hover{background:var(--surface2);border-color:var(--text3);color:var(--text)}
@@ -61,8 +64,8 @@ button,input,select{font-family:inherit}
 .col{flex:1;min-width:230px;border-radius:var(--r);border:1px solid var(--border);background:var(--surface);display:flex;flex-direction:column;box-shadow:var(--sh1)}
 .col-hdr{padding:9px 11px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border)}
 .col-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.col-name{font-size:11px;font-weight:700;flex:1;color:var(--text2);text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.col-cnt{font-size:11px;font-weight:600;color:var(--text3);background:var(--surface2);border:1px solid var(--border);padding:1px 7px;border-radius:999px;flex-shrink:0}
+.col-name{font-size:12.5px;font-weight:800;flex:1;color:var(--text);text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.col-cnt{font-size:12px;font-weight:800;color:var(--text2);background:var(--surface2);border:1px solid var(--border2);padding:2px 9px;border-radius:999px;flex-shrink:0}
 .col-hdr .bi{opacity:0;transition:opacity .15s}
 .col:hover .col-hdr .bi{opacity:1}
 .col-chev{display:none;font-size:11px;color:var(--text3);transition:transform .2s;flex-shrink:0}
@@ -160,8 +163,10 @@ button,input,select{font-family:inherit}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:999px}
 
 @media(max-width:768px){
-  .hdr{height:50px;padding:0 12px}
+  .hdr{height:50px;padding:0 12px;gap:8px}
   .brand{font-size:14px}
+  .stats{gap:5px}
+  .stats .stat{font-size:11px;padding:2px 7px}
   .hdr-acts{display:none}
   .fab{display:flex}
   .sheet-ov{display:block}
@@ -182,13 +187,16 @@ button,input,select{font-family:inherit}
   .form-grid{grid-template-columns:1fr}
   #notif{bottom:84px;left:12px;right:12px;max-width:none;text-align:center}
 }
+@media(max-width:430px){
+  .stats .s-ad,.stats .s-ch{display:none}
+}
 </style>
 </head>
 <body>
 
 <header class="hdr">
   <div class="brand">🎂 <span>Festa do Vicente</span> <small>· 1 ano</small></div>
-  <div class="stats"><span><b id="hA">0</b> adultos</span><span><b id="hC">0</b> crianças</span><span><b id="hT">0</b> total</span></div>
+  <div class="stats"><span class="stat s-ad"><b id="hA">0</b> adultos</span><span class="stat s-ch"><b id="hC">0</b> crianças</span><span class="stat tot"><b id="hT">0</b> total</span></div>
   <div class="sep"></div>
   <div id="sync-st" class="sync-st off"></div>
   <div class="hdr-acts">
@@ -421,8 +429,8 @@ function renderCol(cat){
   const body=grps.length?grps.map(g=>g.type==='solo'?renderACard(g.adult):renderFGroup(g)).join(''):`<div class="empty-col">${hasActiveFilters()?'Nenhum resultado':'Arraste convidados aqui'}</div>`;
   const sys=cat.id==='cat0';
   const btns=sys?'':`<button class="bi" onclick="editCat(event,'${cat.id}')" title="Editar">✏</button><button class="bi d" onclick="delCat(event,'${cat.id}')" title="Excluir">✕</button>`;
-  return `<div class="col" id="col-${cat.id}" style="border-top:2px solid ${cat.color}">
-    <div class="col-hdr" onclick="toggleCol(event,'${cat.id}')"><span class="col-dot" style="background:${cat.color}"></span><div class="col-name">${esc(cat.name)}</div><div class="col-cnt">${hasActiveFilters()?visCnt+'/'+allCnt:allCnt}</div>${btns}<span class="col-chev">▾</span></div>
+  return `<div class="col" id="col-${cat.id}" style="border-top:3px solid ${cat.color}">
+    <div class="col-hdr" onclick="toggleCol(event,'${cat.id}')"><span class="col-dot" style="background:${cat.color}"></span><div class="col-name" style="color:${cat.color}">${esc(cat.name)}</div><div class="col-cnt" style="color:${cat.color};background:${cat.color}14;border-color:${cat.color}55">${hasActiveFilters()?visCnt+'/'+allCnt:allCnt}</div>${btns}<span class="col-chev">▾</span></div>
     <div class="col-body" id="cb-${cat.id}" ondragover="colOver(event,'${cat.id}')" ondragleave="colLeave(event,'${cat.id}')" ondrop="colDrop(event,'${cat.id}')">${body}</div>
     <div class="col-ft"><button class="btn-ac" data-cat="${cat.id}" ondragover="btnAcOver(event,'${cat.id}')" ondragleave="btnAcLeave(event)" ondrop="btnAcDrop(event,'${cat.id}')" onclick="openModal('adult','${cat.id}')">＋ Adulto</button></div>
   </div>`;
@@ -431,8 +439,8 @@ function renderStatusCol(st){
   const grps=allGroups().filter(g=>groupVisible(g)&&g.members.some(a=>(a.status||'pendente')===st.id));
   const cnt=S.adults.filter(a=>(a.status||'pendente')===st.id).length;
   const body=grps.length?grps.map(g=>g.type==='solo'?renderACard(g.adult):renderFGroup(g)).join(''):`<div class="empty-col">Nenhum convidado</div>`;
-  return `<div class="col" id="col-status-${st.id}" style="border-top:2px solid ${st.color}">
-    <div class="col-hdr" onclick="toggleCol(event,'status-${st.id}')"><span class="col-dot" style="background:${st.color}"></span><div class="col-name">${st.label}</div><div class="col-cnt">${cnt}</div><span class="col-chev">▾</span></div>
+  return `<div class="col col-status" id="col-status-${st.id}" style="border-top:4px solid ${st.color};background:${st.color}0a">
+    <div class="col-hdr" style="background:${st.color}16;border-bottom-color:${st.color}3a" onclick="toggleCol(event,'status-${st.id}')"><span class="col-dot" style="background:${st.color};width:11px;height:11px"></span><div class="col-name" style="color:${st.color}">${st.label}</div><div class="col-cnt" style="color:${st.color};background:${st.color}22;border-color:${st.color}66">${cnt}</div><span class="col-chev">▾</span></div>
     <div class="col-body" id="sb-${st.id}" ondragover="statusOver(event,'${st.id}')" ondragleave="statusLeave(event,'${st.id}')" ondrop="statusDrop(event,'${st.id}')">${body}</div>
   </div>`;
 }
@@ -450,8 +458,8 @@ function renderChildCol(){
       </div><div class="child-parents">${esc(pt)}</div>
     </div>`;
   }).join('')||`<div class="empty-col">${hasActiveFilters()?'Nenhuma criança encontrada':'Nenhuma criança'}</div>`;
-  return `<div class="col" id="col-children" style="border-top:2px solid var(--green)">
-    <div class="col-hdr" onclick="toggleCol(event,'children')"><span class="col-dot" style="background:var(--green)"></span><div class="col-name">Crianças</div><div class="col-cnt">${visible.length}/${S.children.length}</div><span class="col-chev">▾</span></div>
+  return `<div class="col" id="col-children" style="border-top:3px solid var(--green)">
+    <div class="col-hdr" onclick="toggleCol(event,'children')"><span class="col-dot" style="background:var(--green)"></span><div class="col-name" style="color:#2E8B6B">Crianças</div><div class="col-cnt" style="color:#2E8B6B;background:#3FA98016;border-color:#3FA98055">${visible.length}/${S.children.length}</div><span class="col-chev">▾</span></div>
     <div class="col-body" id="cb-children">${cards}</div>
     <div class="col-ft"><button class="btn-ac" onclick="openModal('child')">＋ Criança</button></div>
   </div>`;
