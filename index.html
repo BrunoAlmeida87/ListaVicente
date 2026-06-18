@@ -553,6 +553,7 @@ function applyDrop(){
   }
   if(dndAction.kind==='insert'){
     const ids=drag.type==='group'?drag.ids:[drag.id];
+    if(dndAction.beforeId&&ids.includes(dndAction.beforeId))return true; // soltou sobre si mesmo: sem efeito
     const first=adultById(ids[0]);const changed=first&&first.catId!==dndAction.catId;
     moveAdults(ids,dndAction.catId,dndAction.beforeId);
     save();render();notify(changed?('Movido para '+(catById(dndAction.catId)?.name||'')):'Reorganizado');
