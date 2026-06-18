@@ -78,7 +78,7 @@ button,input,select{font-family:inherit}
 .empty-col{text-align:center;color:var(--text3);font-size:12px;padding:14px 8px}
 
 /* CARD — linha fina */
-.acard{background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);padding:5px 9px;cursor:grab;transition:background .12s,border-color .12s;user-select:none;touch-action:none}
+.acard{background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);padding:5px 9px;cursor:grab;transition:background .12s,border-color .12s;user-select:none;touch-action:pan-y}
 .acard:hover{background:var(--surface2);border-color:var(--border2)}
 .acard.dragging{opacity:.4}
 .acard.child-mode{border-color:#BFE3D3}
@@ -110,7 +110,7 @@ button,input,select{font-family:inherit}
 .fgroup-children{padding:4px 9px 5px 17px;font-size:11px;color:var(--text3);line-height:1.3;border-top:1px dashed var(--border)}
 
 /* CHILD CARD */
-.ccard{background:#F3FAF7;border:1px solid #DCEEE6;border-radius:var(--rs);padding:5px 9px;cursor:grab;user-select:none;transition:background .12s,border-color .12s;touch-action:none}
+.ccard{background:#F3FAF7;border:1px solid #DCEEE6;border-radius:var(--rs);padding:5px 9px;cursor:grab;user-select:none;transition:background .12s,border-color .12s;touch-action:pan-y}
 .ccard:hover{background:#EAF6F0;border-color:#C8E5D8}
 .ccard.dragging{opacity:.4}
 .child-parents{font-size:11px;color:var(--text3);margin-top:1px;padding-left:17px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -512,7 +512,7 @@ function acDrop(e,aid){
   if(drag.type==='child'){linkChild(drag.id,aid);}
   else if(drag.type==='adult'&&drag.id!==aid){
     const a=adultById(drag.id),b=adultById(aid);if(!a||!b)return;
-    if(!a.partnerId&&!b.partnerId){if(confirm(`Formar casal: ${a.name} e ${b.name}?`)){a.partnerId=b.id;b.partnerId=a.id;b.catId=a.catId;save();render();notify(`${a.name} e ${b.name} formam um casal`);}}
+    if(!a.partnerId&&!b.partnerId){if(confirm(`Formar casal: ${a.name} e ${b.name}?`)){a.partnerId=b.id;b.partnerId=a.id;a.catId=b.catId;save();render();notify(`${a.name} e ${b.name} formam um casal`);}}
     else{setAdultCat(a,b.catId);save();render();notify(`${a.name} movido(a)`);}
   }
   else if(drag.type==='group'){const b=adultById(aid);if(b)colDrop(e,b.catId);}
