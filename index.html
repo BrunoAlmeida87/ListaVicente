@@ -83,6 +83,9 @@ button,input,select{font-family:inherit}
 .acard.dragging{opacity:.4}
 .acard.child-mode{border-color:#BFE3D3}
 .acard.child-hover{border-color:var(--green);background:#EDF7F2}
+.acard.dover-couple{outline:2px solid var(--accent);outline-offset:-1px;background:var(--accent-bg)}
+.ins-before{box-shadow:0 -3px 0 -1px var(--accent)}
+.ins-after{box-shadow:0 3px 0 -1px var(--accent)}
 .card-row{display:flex;align-items:center;gap:8px;min-height:22px}
 .st-dot{width:9px;height:9px;border-radius:50%;border:none;padding:0;cursor:pointer;flex-shrink:0}
 .card-name{font-size:13px;font-weight:600;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text)}
@@ -381,13 +384,12 @@ function childVisible(c){
 function hasActiveFilters(){return !!(filters.q||filters.status!=='all'||filters.cat!=='all')}
 
 // RENDER
-function renderACard(a,showKids=true){
+function renderACard(a,showKids=true,canDrag=true){
   const st=statusInfo(a.status);
   const kids=showKids?(a.childrenIds||[]).map(childById).filter(Boolean):[];
   const kHtml=kids.length?`<div class="kids-sub">↳ ${esc(kids.map(c=>c.name).join(', '))}</div>`:'';
-  return `<div class="acard" id="ac-${a.id}" draggable="true"
-    ondragstart="dStart(event,'adult','${a.id}')" ondragend="dEnd()"
-    ondragover="acOver(event,'${a.id}')" ondragleave="acLeave(event,'${a.id}')" ondrop="acDrop(event,'${a.id}')">
+  const dragAttrs=canDrag?`draggable="true" ondragstart="dStart(event,'adult','${a.id}')" ondragend="dEnd()"`:`draggable="false"`;
+  return `<div class="acard" id="ac-${a.id}" ${dragAttrs}>
     <div class="card-row">
       <span class="st-dot" style="background:${st.color}" title="${st.label}" onclick="cycleStatus(event,'${a.id}')"></span>
       <div class="card-name">${esc(a.name)}</div>
@@ -408,7 +410,7 @@ function renderFGroup(g){
   const unc=g.isCouple?`<button class="bi fg-x" title="Desfazer casal" onclick="uncouple(event,'${g.members[0].id}')">✕</button>`:'';
   return `<div class="fgroup ${g.isCouple?'is-couple':'is-family'}" id="fg-${g.members[0].id}">
     <div class="fgroup-hdr" draggable="true" ondragstart="fgroupStart(event,'${mids}')" ondragend="dEnd()">${label}${unc}<small>arrastar</small></div>
-    <div class="fgroup-parents">${g.members.map(m=>renderACard(m,false)).join('')}</div>
+    <div class="fgroup-parents">${g.members.map(m=>renderACard(m,false,false)).join('')}</div>
     ${kidsRow}
   </div>`;
 }
@@ -476,47 +478,91 @@ function setFilters(){filters.q=document.getElementById('q').value.trim();filter
 function setView(v){viewMode=v;document.getElementById('view-cat').classList.toggle('active',v==='cat');document.getElementById('view-status').classList.toggle('active',v==='status');render()}
 
 // STATUS DRAG
-function statusOver(e,statusId){if(!drag||drag.type==='child')return;e.preventDefault();e.stopPropagation();document.getElementById('sb-'+statusId)?.classList.add('dover')}
+function statusOver(e,statusId){
+  if(!drag)return;e.preventDefault();e.stopPropagation();clearMarks();
+  if(drag.type==='child'){document.elementFromPoint(e.clientX,e.clientY)?.closest('.acard')?.classList.add('child-hover');return;}
+  document.getElementById('sb-'+statusId)?.classList.add('dover');
+}
 function statusLeave(e,statusId){const el=document.getElementById('sb-'+statusId);if(el&&!el.contains(e.relatedTarget))el.classList.remove('dover')}
 function statusDrop(e,statusId){
   e.preventDefault();e.stopPropagation();if(!drag)return;
-  if(drag.type==='adult'){const a=adultById(drag.id);if(a)a.status=statusId;}
-  else if(drag.type==='group'){drag.ids.forEach(id=>{const a=adultById(id);if(a)a.status=statusId;});}
-  save();render();notify('Status: '+statusInfo(statusId).label);
+  if(drag.type==='child'){const el=document.elementFromPoint(e.clientX,e.clientY)?.closest('.acard');clearMarks();if(el)linkChild(drag.id,el.id.replace('ac-',''));return;}
+  const ids=drag.type==='group'?drag.ids:[drag.id];
+  ids.forEach(id=>{const a=adultById(id);if(a)a.status=statusId;});
+  clearMarks();save();render();notify('Status: '+statusInfo(statusId).label);
 }
 
 // MOUSE D&D
 function dStart(e,type,id){drag={type,id};e.dataTransfer.effectAllowed='move';setTimeout(()=>{document.getElementById((type==='adult'?'ac-':'cc-')+id)?.classList.add('dragging');if(type==='child')document.querySelectorAll('.acard').forEach(el=>el.classList.add('child-mode'));},0)}
-function dEnd(){document.querySelectorAll('.dragging,.child-mode,.child-hover,.dover,.dover-ac').forEach(el=>el.classList.remove('dragging','child-mode','child-hover','dover','dover-ac'));drag=null}
+function dEnd(){clearMarks();document.querySelectorAll('.dragging,.child-mode').forEach(el=>el.classList.remove('dragging','child-mode'));drag=null}
 function btnAcOver(e,catId){if(!drag||drag.type==='child')return;e.preventDefault();e.stopPropagation();e.currentTarget.classList.add('dover-ac')}
 function btnAcLeave(e){e.currentTarget.classList.remove('dover-ac')}
 function btnAcDrop(e,catId){e.currentTarget.classList.remove('dover-ac');colDrop(e,catId)}
 function fgroupStart(e,idsStr){drag={type:'group',ids:idsStr.split(',')};e.dataTransfer.effectAllowed='move';e.stopPropagation();setTimeout(()=>e.target.closest('.fgroup')?.classList.add('dragging'),0)}
-function colOver(e,catId){if(!drag||drag.type==='child')return;e.preventDefault();e.stopPropagation();document.getElementById('cb-'+catId)?.classList.add('dover')}
-function colLeave(e,catId){const el=document.getElementById('cb-'+catId);if(el&&!el.contains(e.relatedTarget))el.classList.remove('dover')}
-function colDrop(e,catId){
-  e.preventDefault();e.stopPropagation();if(!drag)return;
-  const catName=catById(catId)?.name||'';
-  if(drag.type==='adult'){const a=adultById(drag.id);if(a){setAdultCat(a,catId);save();render();notify('Movido para '+catName);}}
-  else if(drag.type==='group'){drag.ids.forEach(id=>{const m=adultById(id);if(m)m.catId=catId;});save();render();notify('Família movida para '+catName);}
-}
 function setAdultCat(a,catId){a.catId=catId;if(a.partnerId){const p=adultById(a.partnerId);if(p)p.catId=catId;}}
-function acOver(e,aid){
-  if(!drag)return;e.preventDefault();e.stopPropagation();
-  if(drag.type==='child'){document.querySelectorAll('.child-hover').forEach(el=>el.classList.remove('child-hover'));document.getElementById('ac-'+aid)?.classList.add('child-hover');}
-  else if(drag.type==='group'){document.getElementById('ac-'+aid)?.closest('.col-body')?.classList.add('dover');}
-}
-function acLeave(e,aid){const card=document.getElementById('ac-'+aid);if(card&&!card.contains(e.relatedTarget))card.classList.remove('child-hover')}
-function acDrop(e,aid){
-  e.preventDefault();e.stopPropagation();if(!drag)return;
-  if(drag.type==='child'){linkChild(drag.id,aid);}
-  else if(drag.type==='adult'&&drag.id!==aid){
-    const a=adultById(drag.id),b=adultById(aid);if(!a||!b)return;
-    if(!a.partnerId&&!b.partnerId){if(confirm(`Formar casal: ${a.name} e ${b.name}?`)){a.partnerId=b.id;b.partnerId=a.id;a.catId=b.catId;save();render();notify(`${a.name} e ${b.name} formam um casal`);}}
-    else{setAdultCat(a,b.catId);save();render();notify(`${a.name} movido(a)`);}
+
+// blocos (cards/grupos) de topo de uma coluna + marcas visuais
+function colBlocks(cb){return [...cb.children].filter(el=>el.classList.contains('acard')||el.classList.contains('fgroup'))}
+function blockFirstAdultId(el){if(el.classList.contains('acard'))return el.id.replace('ac-','');const inner=el.querySelector('.acard');return inner?inner.id.replace('ac-',''):null}
+function clearMarks(){document.querySelectorAll('.child-hover,.dover,.dover-ac,.dover-couple,.ins-before,.ins-after').forEach(el=>el.classList.remove('child-hover','dover','dover-ac','dover-couple','ins-before','ins-after'))}
+
+let dndAction=null;
+function resolveDrop(catId,x,y){
+  clearMarks();dndAction=null;
+  const cb=document.getElementById('cb-'+catId);if(!cb||!drag)return;
+  const overCard=document.elementFromPoint(x,y)?.closest('.acard');
+  if(drag.type==='child'){
+    if(overCard){overCard.classList.add('child-hover');dndAction={kind:'child',aid:overCard.id.replace('ac-','')};}
+    return;
   }
-  else if(drag.type==='group'){const b=adultById(aid);if(b)colDrop(e,b.catId);}
+  // zona de casal: centro de outro card, ambos sem parceiro
+  if(drag.type==='adult'&&overCard&&overCard.id!=='ac-'+drag.id){
+    const aid=overCard.id.replace('ac-','');const a=adultById(drag.id),b=adultById(aid);const r=overCard.getBoundingClientRect();
+    if(a&&b&&!a.partnerId&&!b.partnerId&&y>r.top+r.height*0.3&&y<r.bottom-r.height*0.3){
+      overCard.classList.add('dover-couple');dndAction={kind:'couple',aid};return;
+    }
+  }
+  // reordenar / inserir na posição
+  const blocks=colBlocks(cb);
+  let idx=blocks.length;
+  for(let i=0;i<blocks.length;i++){const r=blocks[i].getBoundingClientRect();if(y<r.top+r.height/2){idx=i;break;}}
+  const beforeId=idx<blocks.length?blockFirstAdultId(blocks[idx]):null;
+  dndAction={kind:'insert',catId,beforeId};
+  if(idx<blocks.length)blocks[idx].classList.add('ins-before');
+  else if(blocks.length)blocks[blocks.length-1].classList.add('ins-after');
+  else cb.classList.add('dover');
 }
+function moveAdults(ids,catId,beforeId){
+  const movingSet=new Set(ids);
+  const moving=ids.map(adultById).filter(Boolean);
+  if(!moving.length)return;
+  S.adults=S.adults.filter(a=>!movingSet.has(a.id));
+  moving.forEach(a=>a.catId=catId);
+  let insertAt;
+  if(beforeId&&!movingSet.has(beforeId)){const i=S.adults.findIndex(a=>a.id===beforeId);insertAt=i<0?S.adults.length:i;}
+  else{let last=-1;for(let i=0;i<S.adults.length;i++)if(S.adults[i].catId===catId)last=i;insertAt=last<0?S.adults.length:last+1;}
+  S.adults.splice(insertAt,0,...moving);
+}
+function applyDrop(){
+  if(!drag||!dndAction)return false;
+  if(dndAction.kind==='child'){linkChild(drag.id,dndAction.aid);return true;}
+  if(dndAction.kind==='couple'){
+    const a=adultById(drag.id),b=adultById(dndAction.aid);
+    if(a&&b&&!a.partnerId&&!b.partnerId&&confirm(`Formar casal: ${a.name} e ${b.name}?`)){a.partnerId=b.id;b.partnerId=a.id;a.catId=b.catId;save();render();notify(`${a.name} e ${b.name} formam um casal`);}
+    return true;
+  }
+  if(dndAction.kind==='insert'){
+    const ids=drag.type==='group'?drag.ids:[drag.id];
+    const first=adultById(ids[0]);const changed=first&&first.catId!==dndAction.catId;
+    moveAdults(ids,dndAction.catId,dndAction.beforeId);
+    save();render();notify(changed?('Movido para '+(catById(dndAction.catId)?.name||'')):'Reorganizado');
+    return true;
+  }
+  return false;
+}
+function colOver(e,catId){if(!drag)return;e.preventDefault();e.stopPropagation();resolveDrop(catId,e.clientX,e.clientY)}
+function colLeave(e,catId){const cb=document.getElementById('cb-'+catId);if(cb&&!cb.contains(e.relatedTarget))clearMarks()}
+function colDrop(e,catId){e.preventDefault();e.stopPropagation();if(!drag)return;resolveDrop(catId,e.clientX,e.clientY);applyDrop();clearMarks()}
 
 // TOUCH D&D
 let tD=null,tCl=null,_tdActive=null;
@@ -530,13 +576,12 @@ function _tActivate(){
     if(tCl){tCl.style.top=(t.clientY-tD.oy)+'px';tCl.style.left=(t.clientX-tD.ox)+'px';tCl.style.display='none';}
     const under=document.elementFromPoint(t.clientX,t.clientY);
     if(tCl)tCl.style.display='';
-    document.querySelectorAll('.child-hover,.dover,.dover-ac').forEach(el=>el.classList.remove('child-hover','dover','dover-ac'));
-    if(tD.type==='child'){under?.closest('.acard')?.classList.add('child-hover');}
-    else{
-      const tb=under?.closest('.col-body'),bac=under?.closest('.btn-ac');
-      if(bac)bac.classList.add('dover-ac');
-      else if(tb)tb.classList.add('dover');
-    }
+    const sv=drag;drag=tD;
+    const cb=under?.closest('.col-body');
+    if(cb&&cb.id.indexOf('cb-')===0&&cb.id!=='cb-children'){resolveDrop(cb.id.replace('cb-',''),t.clientX,t.clientY);}
+    else if(cb&&cb.id.indexOf('sb-')===0){clearMarks();cb.classList.add('dover');if(tD.type==='child')under?.closest('.acard')?.classList.add('child-hover');}
+    else{clearMarks();under?.closest('.btn-ac')?.classList.add('dover-ac');}
+    drag=sv;
   };
   document.addEventListener('touchmove',_tdActive,{passive:false});
 }
@@ -565,6 +610,7 @@ document.addEventListener('touchstart',e=>{
   }
   const card=e.target.closest('.acard,.ccard');
   if(!card||e.target.closest('.bi,.btn-ac,.st-dot,.st-lbl'))return;
+  if(card.classList.contains('acard')&&card.closest('.fgroup-parents'))return;
   const isA=card.classList.contains('acard');
   const id=card.id.replace(isA?'ac-':'cc-','');
   _tStart(card,t,{type:isA?'adult':'child',id,sx:t.clientX,sy:t.clientY,active:false,card});
@@ -582,21 +628,17 @@ document.addEventListener('touchend',e=>{
   if(tCl){document.body.removeChild(tCl);tCl=null;}
   if(tD.card)tD.card.style.opacity='';
   const under=document.elementFromPoint(t.clientX,t.clientY);
-  const fake={preventDefault:()=>{},stopPropagation:()=>{}};
-  if(tD.type==='child'){
-    const tc=under?.closest('.acard');if(tc)linkChild(tD.id,tc.id.replace('ac-',''));
-  }else{
-    const tc=under?.closest('.acard'),tb=under?.closest('.col-body'),bac=under?.closest('.btn-ac');
-    const sv=drag;drag=tD;
-    if(tD.type==='adult'&&tc&&tc.id!=='ac-'+tD.id)acDrop(fake,tc.id.replace('ac-',''));
-    else if(bac){const cid=bac.dataset.cat;if(cid)colDrop(fake,cid);}
-    else if(tb){
-      if(tb.id.startsWith('sb-'))statusDrop(fake,tb.id.replace('sb-',''));
-      else{const cid=tb.id.replace('cb-','');if(cid!=='children')colDrop(fake,cid);}
-    }
-    drag=sv;
+  const sv=drag;drag=tD;
+  const cb=under?.closest('.col-body'),bac=under?.closest('.btn-ac');
+  if(cb&&cb.id.indexOf('sb-')===0){
+    const statusId=cb.id.replace('sb-','');
+    if(tD.type==='child'){const el=under?.closest('.acard');if(el)linkChild(tD.id,el.id.replace('ac-',''));}
+    else{const ids=tD.type==='group'?tD.ids:[tD.id];ids.forEach(id=>{const a=adultById(id);if(a)a.status=statusId;});save();render();notify('Status: '+statusInfo(statusId).label);}
   }
-  document.querySelectorAll('.child-mode,.child-hover,.dover,.dover-ac').forEach(el=>el.classList.remove('child-mode','child-hover','dover','dover-ac'));
+  else if(bac){const cid=bac.dataset.cat;if(cid){resolveDrop(cid,t.clientX,t.clientY);applyDrop();}}
+  else if(cb&&cb.id.indexOf('cb-')===0&&cb.id!=='cb-children'){resolveDrop(cb.id.replace('cb-',''),t.clientX,t.clientY);applyDrop();}
+  drag=sv;
+  document.querySelectorAll('.child-mode').forEach(el=>el.classList.remove('child-mode'));clearMarks();
   tD=null;
 },{passive:true});
 
