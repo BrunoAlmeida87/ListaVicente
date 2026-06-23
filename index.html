@@ -737,12 +737,12 @@ ul{list-style:none;padding:0}
     <span style="background:#FFF7ED;color:#C2410C;border:1.5px solid #FED7AA;padding:2px 9px;border-radius:999px;font-size:12px;font-weight:700">${totalA}</span>
   </div>
   <div style="background:#fff;border-radius:10px;border:1.5px solid #E2E8F0;padding:4px 14px;box-shadow:0 1px 3px rgba(0,0,0,.05)">
-    <ul>${adultItems}</ul>
+    <ul style="column-count:2;column-gap:16px">${adultItems}</ul>
   </div>
 </div>
 
 <!-- CRIANÇAS -->
-<div>
+<div style="page-break-inside:avoid;break-inside:avoid">
   <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;padding-bottom:8px;border-bottom:3px solid #10B981">
     <span style="font-size:18px">👶</span>
     <h2 style="font-size:16px;font-weight:900;color:#1E293B">Crianças</h2>
@@ -765,32 +765,111 @@ ul{list-style:none;padding:0}
 var DATA = ${shareJson};
 var DATESTR = ${JSON.stringify(dt)};
 function buildPdf(){
-  var J = window.jspdf; var doc = new J.jsPDF({unit:'pt', format:'a4'});
-  var W = doc.internal.pageSize.getWidth(), H = doc.internal.pageSize.getHeight(), M = 42;
-  doc.setFillColor(255,107,53); doc.rect(0,0,W,94,'F');
+  var J = window.jspdf;
+  var doc = new J.jsPDF({unit:'pt', format:'a4'});
+  var W = doc.internal.pageSize.getWidth(), H = doc.internal.pageSize.getHeight();
+  var M = 44, lineH = 19, colGap = 20;
+  var colW = (W - 2*M - colGap) / 2;
+
+  // ── HEADER BANNER ────────────────────────────────────────
+  doc.setFillColor(255,107,53);
+  doc.rect(0, 0, W, 102, 'F');
+  doc.setFillColor(255,166,0);
+  doc.rect(0, 94, W, 8, 'F');
+
   doc.setTextColor(255,255,255);
-  doc.setFont('helvetica','bold'); doc.setFontSize(20); doc.text('Festa do Vicente', M, 40);
-  doc.setFont('helvetica','normal'); doc.setFontSize(12); doc.text('Tema: Banda Animal', M, 60);
-  doc.setFontSize(9); doc.text('Lista de Convidados  -  ' + DATESTR, M, 80);
-  var y = 126;
-  function heading(txt, r, g, b){
-    if(y > H - M - 30){ doc.addPage(); y = M; }
-    doc.setFont('helvetica','bold'); doc.setFontSize(14); doc.setTextColor(30,41,59);
-    doc.text(txt, M, y); y += 9;
-    doc.setDrawColor(r,g,b); doc.setLineWidth(2); doc.line(M, y, W - M, y); y += 20;
+  doc.setFont('helvetica','bold'); doc.setFontSize(23);
+  doc.text('Festa do Vicente', M, 40);
+  doc.setFont('helvetica','normal'); doc.setFontSize(12);
+  doc.text('Banda Animal  ·  Lista de Convidados', M, 61);
+  doc.setFontSize(9); doc.setTextColor(255,220,180);
+  doc.text(DATESTR, M, 78);
+  doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.setTextColor(255,255,255);
+  var sumTxt = DATA.adults.length + ' adultos  ·  ' + DATA.children.length + ' criancas';
+  doc.text(sumTxt, W - M - doc.getTextWidth(sumTxt), 78);
+
+  var y = 130;
+
+  // ── SECTION HEADING (colored bar) ────────────────────────
+  function sectionHeading(label, count, r, g, b){
+    doc.setFillColor(r, g, b);
+    doc.roundedRect(M, y - 16, W - 2*M, 28, 5, 5, 'F');
+    doc.setTextColor(255,255,255);
+    doc.setFont('helvetica','bold'); doc.setFontSize(13);
+    doc.text(label + ' (' + count + ')', M + 12, y + 5);
+    y += 36;
   }
-  function item(txt){
-    if(y > H - M){ doc.addPage(); y = M; }
-    doc.setFont('helvetica','normal'); doc.setFontSize(11); doc.setTextColor(30,41,59);
-    doc.text('-  ' + txt, M + 4, y); y += 17;
+
+  // ── TWO-COLUMN ADULT LIST ─────────────────────────────────
+  function twoColAdults(names){
+    if(!names.length){
+      doc.setFont('helvetica','italic'); doc.setFontSize(10); doc.setTextColor(148,163,184);
+      doc.text('Nenhum adulto cadastrado.', M + 6, y); y += lineH; return;
+    }
+    var half = Math.ceil(names.length / 2);
+    var L = names.slice(0, half), R = names.slice(half);
+    // vertical separator
+    var sepX = M + colW + colGap / 2;
+    doc.setDrawColor(226,232,240); doc.setLineWidth(0.5);
+    doc.line(sepX, y - 4, sepX, y + L.length * lineH - 4);
+    for(var i = 0; i < L.length; i++){
+      if(y > H - M - lineH - 30){ doc.addPage(); y = M + 10; }
+      doc.setFont('helvetica','normal'); doc.setFontSize(10); doc.setTextColor(30,41,59);
+      doc.text(L[i], M + 6, y);
+      if(R[i]) doc.text(R[i], M + colW + colGap + 6, y);
+      doc.setDrawColor(241,245,249); doc.setLineWidth(0.3);
+      doc.line(M, y + 5, M + colW, y + 5);
+      if(R[i]) doc.line(M + colW + colGap, y + 5, W - M, y + 5);
+      y += lineH;
+    }
   }
-  heading('Adultos (' + DATA.adults.length + ')', 255,107,53);
-  if(DATA.adults.length){ for(var i=0;i<DATA.adults.length;i++) item(DATA.adults[i]); }
-  else item('Nenhum adulto cadastrado.');
-  y += 14;
-  heading('Criancas (' + DATA.children.length + ')', 16,185,129);
-  if(DATA.children.length){ for(var k=0;k<DATA.children.length;k++){ var c = DATA.children[k]; item(c.name + (c.age ? '   (' + c.age + ')' : '')); } }
-  else item('Nenhuma crianca cadastrada.');
+
+  // ── CHILDREN LIST (single col, name bold + age green) ────
+  function childrenList(children){
+    if(!children.length){
+      doc.setFont('helvetica','italic'); doc.setFontSize(10); doc.setTextColor(148,163,184);
+      doc.text('Nenhuma crianca cadastrada.', M + 6, y); y += lineH; return;
+    }
+    for(var k = 0; k < children.length; k++){
+      var c = children[k];
+      doc.setFont('helvetica','bold'); doc.setFontSize(10); doc.setTextColor(30,41,59);
+      doc.text(c.name, M + 6, y);
+      if(c.age){
+        var nw = doc.getTextWidth(c.name);
+        doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(16,185,129);
+        doc.text(c.age, M + 6 + nw + 8, y);
+      }
+      doc.setDrawColor(209,250,229); doc.setLineWidth(0.3);
+      if(k < children.length - 1) doc.line(M, y + 5, W - M, y + 5);
+      y += lineH;
+    }
+  }
+
+  // ── RENDER ADULTS ─────────────────────────────────────────
+  sectionHeading('Adultos', DATA.adults.length, 255,107,53);
+  twoColAdults(DATA.adults);
+  y += 22;
+
+  // ── PAGE-BREAK GUARD: keep entire children section together
+  var childH = 36 + Math.max(DATA.children.length, 1) * lineH + 10;
+  if(y + childH > H - M - 40){ doc.addPage(); y = M + 10; }
+
+  // ── RENDER CHILDREN ───────────────────────────────────────
+  sectionHeading('Criancas', DATA.children.length, 16,185,129);
+  childrenList(DATA.children);
+
+  // ── FOOTER ON EVERY PAGE ──────────────────────────────────
+  var pages = doc.internal.getNumberOfPages();
+  for(var p = 1; p <= pages; p++){
+    doc.setPage(p);
+    doc.setDrawColor(226,232,240); doc.setLineWidth(0.5);
+    doc.line(M, H - 28, W - M, H - 28);
+    doc.setFont('helvetica','normal'); doc.setFontSize(8); doc.setTextColor(148,163,184);
+    doc.text('Banda Animal · Festa do Vicente', M, H - 14);
+    var pg = p + ' / ' + pages;
+    doc.text(pg, W - M - doc.getTextWidth(pg), H - 14);
+  }
+
   return doc;
 }
 function buildText(){
