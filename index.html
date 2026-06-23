@@ -831,6 +831,7 @@ function buildPdf(){
       doc.text('Nenhuma crianca cadastrada.', M + 6, y); y += lineH; return;
     }
     for(var k = 0; k < children.length; k++){
+      if(y > H - M - lineH - 30){ doc.addPage(); y = M + 10; }
       var c = children[k];
       doc.setFont('helvetica','bold'); doc.setFontSize(10); doc.setTextColor(30,41,59);
       doc.text(c.name, M + 6, y);
