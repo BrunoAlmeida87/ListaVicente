@@ -60,6 +60,33 @@ button,input,select{font-family:inherit}
 /* BOARD */
 .board{display:flex;flex-wrap:wrap;align-items:flex-start;gap:10px;padding:12px;-webkit-overflow-scrolling:touch}
 
+/* INVITE CHECKLIST VIEW */
+.inv{width:100%;max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+.inv-top{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;box-shadow:var(--sh1)}
+.inv-top h2{font-size:14px;font-weight:800;color:var(--text);display:flex;align-items:center;gap:8px;margin-bottom:11px}
+.inv-bar{height:10px;border-radius:999px;background:var(--surface2);border:1px solid var(--border2);overflow:hidden}
+.inv-bar>i{display:block;height:100%;background:linear-gradient(90deg,#3FA980,#5B6CF0);border-radius:999px;transition:width .35s ease}
+.inv-meta{display:flex;justify-content:space-between;align-items:center;margin-top:9px;font-size:12px;font-weight:600;color:var(--text2)}
+.inv-meta b{color:var(--green);font-weight:800}
+.inv-meta .pct{font-weight:800;color:var(--text)}
+.inv-cat{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--sh1);overflow:hidden}
+.inv-cat-hdr{display:flex;align-items:center;gap:8px;padding:9px 13px;border-bottom:1px solid var(--border)}
+.inv-cat-name{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.inv-cat-cnt{font-size:11px;font-weight:800;color:var(--text2);background:var(--surface2);border:1px solid var(--border2);padding:2px 9px;border-radius:999px;flex-shrink:0}
+.inv-row{display:flex;align-items:center;gap:12px;padding:11px 13px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .12s;user-select:none}
+.inv-row:last-child{border-bottom:none}
+.inv-row:hover{background:var(--surface2)}
+.inv-row.on{background:#F1FAF6}
+.inv-chk{width:22px;height:22px;border-radius:6px;border:2px solid var(--border2);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:transparent;background:#fff;transition:all .15s}
+.inv-row.on .inv-chk{background:var(--green);border-color:var(--green);color:#fff}
+.inv-info{flex:1;min-width:0}
+.inv-name{font-size:13.5px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.inv-row.on .inv-name{color:var(--text2)}
+.inv-sub{font-size:11px;color:var(--text3);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.inv-tag{font-size:10px;font-weight:800;color:var(--text3);flex-shrink:0;text-transform:uppercase;letter-spacing:.03em}
+.inv-row.on .inv-tag{color:var(--green)}
+.inv-empty{text-align:center;color:var(--text3);font-size:13px;padding:38px 16px}
+
 /* COLUMN */
 .col{flex:1;min-width:230px;border-radius:var(--r);border:1px solid var(--border);background:var(--surface);display:flex;flex-direction:column;box-shadow:var(--sh1)}
 .col-hdr{padding:9px 11px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border)}
@@ -213,6 +240,7 @@ button,input,select{font-family:inherit}
   <div class="segment">
     <button class="seg active" id="view-cat" onclick="setView('cat')">Categorias</button>
     <button class="seg" id="view-status" onclick="setView('status')">Status</button>
+    <button class="seg" id="view-invite" onclick="setView('invite')">Convites</button>
   </div>
 </section>
 
@@ -292,6 +320,7 @@ function migrate(s){
   s.adults.forEach(a=>{
     if(!a.childrenIds)a.childrenIds=[];
     if(!a.status)a.status='pendente';
+    if(a.invited===undefined)a.invited=false;
     // limpa campos antigos removidos (whatsapp, restrição, observações)
     delete a.phone;delete a.food;delete a.notes;
   });
@@ -467,9 +496,44 @@ function renderChildCol(){
     <div class="col-ft"><button class="btn-ac" onclick="openModal('child')">＋ Criança</button></div>
   </div>`;
 }
+function renderInviteView(){
+  const allVis=allGroups().filter(groupVisible);
+  const total=allVis.length;
+  const sent=allVis.filter(g=>g.members.every(m=>m.invited)).length;
+  const pct=total?Math.round(sent/total*100):0;
+  const top=`<div class="inv-top">
+    <h2>✉️ Controle de convites</h2>
+    <div class="inv-bar"><i style="width:${pct}%"></i></div>
+    <div class="inv-meta"><span><b>${sent}</b> de ${total} convites enviados</span><span class="pct">${pct}%</span></div>
+  </div>`;
+  if(!total)return `<div class="inv">${top}<div class="inv-cat"><div class="inv-empty">${hasActiveFilters()?'Nenhum convidado encontrado':'Nenhum convidado cadastrado'}</div></div></div>`;
+  const cards=S.categories.map(cat=>{
+    const groups=getGroups(cat.id).filter(groupVisible);
+    if(!groups.length)return '';
+    const sentC=groups.filter(g=>g.members.every(m=>m.invited)).length;
+    const rows=groups.map(g=>{
+      const mids=g.members.map(m=>m.id).join(',');
+      const on=g.members.every(m=>m.invited);
+      const names=g.members.map(m=>m.name).join(' e ');
+      const kids=(g.childIds||[]).map(childById).filter(Boolean);
+      const sub=kids.length?`↳ ${esc(kids.map(c=>c.name+(c.age?' ('+c.age+')':'')).join(', '))}`:'';
+      return `<div class="inv-row ${on?'on':''}" onclick="toggleInvite('${mids}')">
+        <span class="inv-chk">✓</span>
+        <div class="inv-info"><div class="inv-name">${esc(names)}</div>${sub?`<div class="inv-sub">${sub}</div>`:''}</div>
+        <span class="inv-tag">${on?'Enviado':'Pendente'}</span>
+      </div>`;
+    }).join('');
+    return `<div class="inv-cat">
+      <div class="inv-cat-hdr"><span class="col-dot" style="background:${cat.color}"></span><span class="inv-cat-name" style="color:${cat.color}">${esc(cat.name)}</span><span class="inv-cat-cnt">${sentC}/${groups.length}</span></div>
+      ${rows}
+    </div>`;
+  }).join('');
+  return `<div class="inv">${top}${cards}</div>`;
+}
 function render(){
   const b=document.getElementById('board');
   if(viewMode==='cat')b.innerHTML=S.categories.map(renderCol).join('')+renderChildCol()+`<button class="btn-newcol" onclick="openModal('category')">＋ Nova Categoria</button>`;
+  else if(viewMode==='invite')b.innerHTML=renderInviteView();
   else b.innerHTML=STATUS.map(renderStatusCol).join('')+renderChildCol();
   document.getElementById('hA').textContent=S.adults.length;
   document.getElementById('hC').textContent=S.children.length;
@@ -486,7 +550,7 @@ function renderAll(){renderControls();render();}
 
 // FILTERS / VIEW
 function setFilters(){filters.q=document.getElementById('q').value.trim();filters.status=document.getElementById('f-status').value;filters.cat=document.getElementById('f-cat').value;render()}
-function setView(v){viewMode=v;document.getElementById('view-cat').classList.toggle('active',v==='cat');document.getElementById('view-status').classList.toggle('active',v==='status');render()}
+function setView(v){viewMode=v;['cat','status','invite'].forEach(k=>document.getElementById('view-'+k).classList.toggle('active',v===k));render()}
 
 // STATUS DRAG
 function statusOver(e,statusId){
@@ -657,6 +721,7 @@ document.addEventListener('touchend',e=>{
 // ACTIONS
 function linkChild(cid,aid){const a=adultById(aid),c=childById(cid);if(!a||!c)return;if(!a.childrenIds)a.childrenIds=[];if(!c.parentIds)c.parentIds=[];if(!a.childrenIds.includes(cid))a.childrenIds.push(cid);if(!c.parentIds.includes(aid))c.parentIds.push(aid);save();render();notify(`${c.name} vinculado(a) a ${a.name}`)}
 function cycleStatus(e,id){e.stopPropagation();const a=adultById(id);if(!a)return;const idx=STATUS.findIndex(s=>s.id===(a.status||'pendente'));a.status=STATUS[(idx+1)%STATUS.length].id;save();render();notify(`${a.name}: ${statusInfo(a.status).label}`)}
+function toggleInvite(idsStr){const ids=idsStr.split(',');const target=ids.some(id=>{const a=adultById(id);return a&&!a.invited;});ids.forEach(id=>{const a=adultById(id);if(a)a.invited=target;});save();render();notify(target?'Convite marcado como enviado':'Convite desmarcado')}
 function uncouple(e,id){e.stopPropagation();const a=adultById(id);if(!a||!a.partnerId)return;const p=adultById(a.partnerId);if(!confirm(`Desfazer casal${p?' de '+a.name+' e '+p.name:''}?`))return;if(p)delete p.partnerId;delete a.partnerId;save();render();notify('Casal desfeito')}
 function toggleCol(e,id){
   if(!window.matchMedia('(max-width:768px)').matches)return;
