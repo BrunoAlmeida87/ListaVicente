@@ -34,8 +34,13 @@ button,input,select,textarea{font-family:inherit}
 .brand{font-size:15px;font-weight:800;white-space:nowrap;flex-shrink:0;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.25)}
 .brand small{font-weight:500;color:rgba(255,255,255,.55);margin-left:3px;font-size:12px}
 .sep{flex:1;min-width:6px}
-.stats{display:flex;gap:9px;font-size:12px;color:rgba(255,255,255,.65);flex-shrink:0;white-space:nowrap}
-.stats b{color:#fff;font-weight:800}
+.stats{display:flex;gap:6px;font-size:12px;flex-shrink:0;white-space:nowrap}
+.stat-pill{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:999px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16);color:rgba(255,255,255,.75);line-height:1;flex-shrink:0}
+.stat-pill b{color:#fff;font-weight:850;font-size:13px}
+.stat-ico{font-size:12px;filter:saturate(1.1)}
+.stat-lbl{font-size:11px;font-weight:600}
+.stat-pill.sp-child{background:rgba(16,185,129,.2);border-color:rgba(110,231,183,.35)}
+.stat-pill.sp-total{background:rgba(99,102,241,.28);border-color:rgba(199,210,254,.4)}
 .hdr-acts{display:flex;align-items:center;gap:5px;flex-shrink:0}
 .btn{padding:6px 10px;border-radius:var(--rs);border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.12);font-size:12px;font-weight:650;color:rgba(255,255,255,.9);cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:5px;white-space:nowrap;flex-shrink:0;line-height:1;min-height:30px;backdrop-filter:blur(4px)}
 .btn:hover{border-color:rgba(255,255,255,.35);background:rgba(255,255,255,.22);color:#fff}
@@ -68,6 +73,7 @@ button,input,select,textarea{font-family:inherit}
 .segment{display:flex;gap:2px;background:var(--bg);border:1px solid var(--border);border-radius:999px;padding:3px;flex-shrink:0}
 .seg{border:0;background:transparent;border-radius:999px;padding:6px 11px;font-size:12px;font-weight:750;color:var(--text2);cursor:pointer;transition:all .15s}
 .seg.active{background:#fff;color:var(--accent);box-shadow:var(--sh1)}
+body.view-dash .searchbox,body.view-dash #f-status,body.view-dash #f-cat,body.view-dash .tbtn{display:none}
 
 /* DASHBOARD */
 .dash{background:linear-gradient(180deg,#fff 0%,#F8FAFC 100%);border-bottom:1px solid var(--border);padding:10px 12px 12px;display:none;flex-shrink:0;max-height:270px;overflow:auto}
@@ -89,6 +95,33 @@ button,input,select,textarea{font-family:inherit}
 .cat-mini:last-child{border-bottom:0}
 .cat-mini b{font-size:12px}
 .cat-mini span{font-size:11px;color:var(--text3)}
+
+/* DASHBOARD VIEW (aba Painel) */
+.dashview{width:100%;max-width:1120px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+.dv-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.dv-title{font-size:19px;font-weight:850;color:var(--text);display:flex;align-items:center;gap:8px}
+.dv-title small{font-size:12px;font-weight:600;color:var(--text3)}
+.dv-sec{display:flex;flex-direction:column;gap:10px}
+.dv-sec-t{font-size:12px;font-weight:850;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;display:flex;align-items:center;gap:7px}
+.dv-sec-t::after{content:'';flex:1;height:1px;background:var(--border)}
+.dv-kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
+.dv-kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:13px 13px 12px;box-shadow:var(--sh1);position:relative;overflow:hidden}
+.dv-kpi::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--kc,var(--accent))}
+.dv-kpi-l{font-size:10px;color:var(--text3);font-weight:850;text-transform:uppercase;letter-spacing:.05em}
+.dv-kpi-v{font-size:29px;font-weight:850;margin-top:5px;line-height:1;color:var(--kc,var(--text))}
+.dv-kpi-s{font-size:11px;color:var(--text2);margin-top:5px;line-height:1.35}
+.dv-panels{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.dv-panel{background:#fff;border:1px solid var(--border);border-radius:var(--r);padding:14px;box-shadow:var(--sh1)}
+.dv-panel-t{font-size:13px;font-weight:850;color:var(--text);margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.dv-panel-t small{font-size:11px;font-weight:700;color:var(--text3)}
+.dv-list{display:flex;flex-direction:column}
+.dv-li{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px dashed var(--border)}
+.dv-li:last-child{border-bottom:0}
+.dv-li-ic{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;background:var(--bg)}
+.dv-li-tx{flex:1;font-size:13px;font-weight:700;color:var(--text2)}
+.dv-li-tx small{display:block;font-size:11px;font-weight:500;color:var(--text3);margin-top:1px}
+.dv-li-v{font-size:17px;font-weight:850;color:var(--text)}
+.dv-note{font-size:11px;color:var(--text3);margin-top:10px;line-height:1.5;background:var(--surface2);padding:8px 10px;border-radius:var(--rs)}
 
 /* BOARD */
 .board{overflow:visible;display:flex;flex-wrap:wrap;align-items:flex-start;gap:10px;padding:12px;-webkit-overflow-scrolling:touch}
@@ -216,13 +249,19 @@ button,input,select,textarea{font-family:inherit}
   .dash-grid{grid-template-columns:repeat(3,minmax(110px,1fr))}
   .dash-row{grid-template-columns:1fr}
   .hdr-acts .desktop-only{display:none}
+  .dv-kpis{grid-template-columns:repeat(3,1fr)}
+  .dv-panels{grid-template-columns:1fr}
 }
 @media(max-width:768px){
   :root{--r:10px}
-  .hdr{height:48px;padding:0 10px}
+  .hdr{height:48px;padding:0 8px;gap:6px}
   .brand{font-size:13px}
-  .brand small{font-size:11px}
-  .stats{gap:6px;font-size:11px}
+  .brand small{display:none}
+  .stats{gap:4px}
+  .stat-pill{padding:4px 8px;gap:3px}
+  .stat-pill b{font-size:13px}
+  .stat-lbl{display:none}
+  .sep{min-width:0}
   .hdr-acts{display:none}
   .fab{display:flex}
   .sheet-ov{display:block}
@@ -235,6 +274,9 @@ button,input,select,textarea{font-family:inherit}
   .dash-grid{grid-template-columns:repeat(2,minmax(110px,1fr))}
   .dash-row{grid-template-columns:1fr}
   .bar-row{grid-template-columns:90px 1fr 28px}
+  .dv-kpis{grid-template-columns:repeat(2,1fr)}
+  .dv-kpi-v{font-size:25px}
+  .dv-title{font-size:16px}
   .board{flex-direction:column;flex-wrap:nowrap;align-items:stretch;overflow:visible;padding:8px 8px 88px;gap:7px}
   .col{width:100%;max-height:none;min-width:0;flex:none}
   body.dash-open .col{max-height:none}
@@ -266,7 +308,11 @@ button,input,select,textarea{font-family:inherit}
 
 <header class="hdr">
   <div class="brand">🎂 <span>Festa do Vicente</span> <small>· 1 ano</small></div>
-  <div class="stats"><span><b id="hA">0</b> adultos</span><span><b id="hC">0</b> crianças</span><span><b id="hT">0</b> total</span></div>
+  <div class="stats">
+    <span class="stat-pill" title="Adultos"><span class="stat-ico">👤</span><b id="hA">0</b><span class="stat-lbl">adultos</span></span>
+    <span class="stat-pill sp-child" title="Crianças"><span class="stat-ico">🧒</span><b id="hC">0</b><span class="stat-lbl">crianças</span></span>
+    <span class="stat-pill sp-total" title="Total de convidados"><span class="stat-ico">🎉</span><b id="hT">0</b><span class="stat-lbl">total</span></span>
+  </div>
   <div class="sep"></div>
   <div id="sync-st" class="sync-st off"></div>
   <div class="hdr-acts">
@@ -275,7 +321,7 @@ button,input,select,textarea{font-family:inherit}
     <button class="btn desktop-only" onclick="exportXLSX()">↓ Excel</button>
     <button class="btn desktop-only" onclick="exportJSON()">Backup</button>
     <button class="btn desktop-only" onclick="captureBoard()">📸</button>
-    <button class="btn btn-w" onclick="toggleDashboard()">📊 Painel</button>
+    <button class="btn btn-w" onclick="setView('dash')">📊 Painel</button>
     <button class="btn btn-p" onclick="openModal('adult')">+ Adulto</button>
     <button class="btn btn-g" onclick="openModal('child')">+ Criança</button>
   </div>
@@ -289,6 +335,7 @@ button,input,select,textarea{font-family:inherit}
   <div class="segment">
     <button class="seg active" id="view-cat" onclick="setView('cat')">Categorias</button>
     <button class="seg" id="view-status" onclick="setView('status')">Status</button>
+    <button class="seg" id="view-dash" onclick="setView('dash')">📊 Painel</button>
   </div>
 </section>
 
@@ -304,7 +351,7 @@ button,input,select,textarea{font-family:inherit}
     <button class="sheet-btn g" onclick="sheetGo('child')">👶 <span>Adicionar criança</span></button>
     <button class="sheet-btn" onclick="sheetGo('category')">🏷️ <span>Nova categoria</span></button>
     <div class="sheet-div"></div>
-    <button class="sheet-btn" onclick="closeSheet();toggleDashboard()">📊 <span>Abrir/fechar painel</span></button>
+    <button class="sheet-btn" onclick="closeSheet();setView('dash')">📊 <span>Abrir painel de totais</span></button>
     <button class="sheet-btn" onclick="closeSheet();captureBoard()">📸 <span>Capturar imagem</span></button>
     <button class="sheet-btn" onclick="sheetImport()">⬆️ <span>Importar Excel/CSV/JSON</span></button>
     <button class="sheet-btn" onclick="sheetTpl()">📄 <span>Baixar modelo Excel</span></button>
@@ -624,8 +671,9 @@ function renderChildCol(){
 }
 function render(){
   const b=document.getElementById('board');
-  b.classList.toggle('filtering',hasActiveFilters());
-  if(viewMode==='cat')b.innerHTML=S.categories.map(renderCol).join('')+renderChildCol()+`<button class="btn-newcol" onclick="openModal('category')">＋ Nova Categoria</button>`;
+  b.classList.toggle('filtering',hasActiveFilters()&&viewMode!=='dash');
+  if(viewMode==='dash')b.innerHTML=renderDashView();
+  else if(viewMode==='cat')b.innerHTML=S.categories.map(renderCol).join('')+renderChildCol()+`<button class="btn-newcol" onclick="openModal('category')">＋ Nova Categoria</button>`;
   else b.innerHTML=STATUS.map(renderStatusCol).join('')+renderChildCol();
   document.getElementById('hA').textContent=S.adults.length;
   document.getElementById('hC').textContent=S.children.length;
@@ -670,12 +718,97 @@ function renderDashboard(){
     <div class="panel"><div class="panel-title"><span>Por categoria</span><span>${S.categories.length} categorias</span></div>${catRows}<div style="font-size:11px;color:var(--text3);margin-top:6px;line-height:1.45">Pendentes: ${esc(pendingNames||'nenhum')}</div></div>
   </div>`;
 }
+function renderDashView(){
+  const adultsN=S.adults.length, childrenN=S.children.length, total=adultsN+childrenN;
+  const stc={};STATUS.forEach(s=>stc[s.id]=S.adults.filter(a=>(a.status||'pendente')===s.id).length);
+  const confirmed=stc['confirmado']||0, pending=stc['pendente']||0;
+  const couples=Math.floor(S.adults.filter(a=>a.partnerId).length/2);
+  const families=allGroups().filter(g=>g.type==='group').length;
+  const linked=S.children.filter(c=>S.adults.some(a=>(a.childrenIds||[]).includes(c.id))).length;
+  const unlinked=childrenN-linked;
+  const noCat=S.adults.filter(a=>a.catId==='cat0').length;
+  const withFood=S.adults.filter(a=>a.food&&a.food.trim()).length;
+  const withPhone=S.adults.filter(a=>a.phone&&a.phone.trim()).length;
+  // Pessoas confirmadas = adultos confirmados + crianças com ao menos um responsável confirmado
+  const confChildren=S.children.filter(c=>S.adults.some(a=>(a.childrenIds||[]).includes(c.id)&&a.status==='confirmado')).length;
+  const confPeople=confirmed+confChildren;
+  const pct=n=>adultsN?Math.round(n/adultsN*100):0;
+
+  const kpi=(l,v,color,s)=>`<div class="dv-kpi" style="--kc:${color}"><div class="dv-kpi-l">${l}</div><div class="dv-kpi-v">${v}</div><div class="dv-kpi-s">${s}</div></div>`;
+  const kpis=[
+    kpi('Total de convidados',total,'var(--accent)',`${adultsN} adultos + ${childrenN} crianças`),
+    kpi('Adultos',adultsN,'#3B82F6','pessoas cadastradas'),
+    kpi('Crianças',childrenN,'#10B981',`${linked} com responsável`),
+    kpi('Confirmados',confPeople,'#047857',`${confirmed} adultos · ${confChildren} crianças`),
+    kpi('Pendentes',pending,'#B45309',`${pct(pending)}% dos adultos`),
+    kpi('Casais',couples,'#EC4899',`${families} famílias/grupos`)
+  ].join('');
+
+  const statusBars=STATUS.map(st=>{
+    const val=stc[st.id]||0, p=pct(val);
+    return `<div class="bar-row"><div class="bar-lbl">${st.icon} ${st.label}</div><div class="bar-bg"><div class="bar-fill" style="width:${p}%;background:${st.color}"></div></div><div class="bar-val">${val}</div></div>`;
+  }).join('');
+
+  const catMax=Math.max(1,...S.categories.map(c=>S.adults.filter(a=>a.catId===c.id).length+S.children.filter(ch=>S.adults.some(a=>a.catId===c.id&&(a.childrenIds||[]).includes(ch.id))).length));
+  const catBars=S.categories.map(c=>{
+    const ad=S.adults.filter(a=>a.catId===c.id).length;
+    const kids=S.children.filter(ch=>S.adults.some(a=>a.catId===c.id&&(a.childrenIds||[]).includes(ch.id))).length;
+    const tot=ad+kids, p=Math.round(tot/catMax*100);
+    return `<div class="bar-row"><div class="bar-lbl" title="${esc(c.name)}" style="color:${c.color}">${esc(c.name)}</div><div class="bar-bg"><div class="bar-fill" style="width:${p}%;background:${c.color}"></div></div><div class="bar-val">${tot}</div></div><div style="font-size:10px;color:var(--text3);margin:-2px 0 4px 118px">${ad} adultos · ${kids} crianças</div>`;
+  }).join('');
+
+  const li=(ic,bg,label,sub,val)=>`<div class="dv-li"><div class="dv-li-ic" style="background:${bg}">${ic}</div><div class="dv-li-tx">${label}${sub?`<small>${sub}</small>`:''}</div><div class="dv-li-v">${val}</div></div>`;
+  const otherList=[
+    li('👨‍👩‍👧','var(--accent-bg)','Famílias / grupos','adultos agrupados',families),
+    li('💑','var(--pink-bg)','Casais formados','',couples),
+    li('🧒','var(--green-bg)','Crianças com responsável',`de ${childrenN} cadastradas`,linked),
+    li('❓',unlinked?'var(--warn-bg)':'var(--bg)','Crianças sem responsável','arraste para vincular',unlinked),
+    li('🏷️',noCat?'var(--warn-bg)':'var(--bg)','Adultos sem categoria','para classificar',noCat),
+    li('🍽️','var(--blue-bg)','Com restrição alimentar','',withFood),
+    li('☎️','var(--surface2)','Com WhatsApp / telefone','',withPhone)
+  ].join('');
+
+  const pendingNames=S.adults.filter(a=>(a.status||'pendente')==='pendente').map(a=>a.name);
+  const naoVai=stc['nao_vai']||0, talvez=stc['talvez']||0;
+  const presenceList=[
+    li('🎉','var(--accent-bg)','Presença estimada','confirmados + talvez (pessoas)',confPeople+talvez+S.children.filter(c=>S.adults.some(a=>(a.childrenIds||[]).includes(c.id)&&a.status==='talvez')).length),
+    li('✅','var(--green-bg)','Adultos confirmados',`${pct(confirmed)}% do total`,confirmed),
+    li('❔','var(--accent-bg)','Adultos "talvez"','',talvez),
+    li('✕',naoVai?'var(--danger-bg)':'var(--bg)','Adultos que não vão','',naoVai)
+  ].join('');
+
+  return `<div class="dashview">
+    <div class="dv-head">
+      <div class="dv-title">📊 Painel de totais <small>Festa do Vicente · 1 ano</small></div>
+    </div>
+    <div class="dv-sec">
+      <div class="dv-sec-t">Números gerais</div>
+      <div class="dv-kpis">${kpis}</div>
+    </div>
+    <div class="dv-sec">
+      <div class="dv-sec-t">Detalhamento</div>
+      <div class="dv-panels">
+        <div class="dv-panel"><div class="dv-panel-t"><span>Confirmação dos adultos</span><small>${confirmed}/${adultsN}</small></div>${statusBars}</div>
+        <div class="dv-panel"><div class="dv-panel-t"><span>Convidados por categoria</span><small>${S.categories.length} categorias</small></div>${catBars}</div>
+      </div>
+    </div>
+    <div class="dv-sec">
+      <div class="dv-sec-t">Outros totais</div>
+      <div class="dv-panels">
+        <div class="dv-panel"><div class="dv-panel-t"><span>Composição</span></div><div class="dv-list">${otherList}</div></div>
+        <div class="dv-panel"><div class="dv-panel-t"><span>Presença</span></div><div class="dv-list">${presenceList}</div>
+          <div class="dv-note"><b>Pendentes (${pendingNames.length}):</b> ${esc(pendingNames.slice(0,14).join(', ')||'nenhum')}${pendingNames.length>14?'…':''}</div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
 function renderAll(){renderControls();renderDashboard();render();}
 
 // FILTERS / VIEW
 function setFilters(){filters.q=document.getElementById('q').value.trim();filters.status=document.getElementById('f-status').value;filters.cat=document.getElementById('f-cat').value;render()}
 function clearFilters(){document.getElementById('q').value='';document.getElementById('f-status').value='all';document.getElementById('f-cat').value='all';filters={q:'',status:'all',cat:'all'};render();notify('Filtros limpos')}
-function setView(v){viewMode=v;document.getElementById('view-cat').classList.toggle('active',v==='cat');document.getElementById('view-status').classList.toggle('active',v==='status');render()}
+function setView(v){viewMode=v;['cat','status','dash'].forEach(k=>document.getElementById('view-'+k).classList.toggle('active',v===k));document.body.classList.toggle('view-dash',v==='dash');render()}
 function toggleDashboard(){dashOpen=!dashOpen;document.getElementById('dash').classList.toggle('open',dashOpen);document.body.classList.toggle('dash-open',dashOpen);if(dashOpen)renderDashboard();}
 
 // STATUS DRAG
