@@ -17,7 +17,7 @@ service cloud.firestore {
 
     // Negar acesso a qualquer outro documento
     match /{document=**} {
-      allow read, write: false;
+      allow read, write: if false;
     }
   }
 }
