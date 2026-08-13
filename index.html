@@ -342,7 +342,13 @@ function adultById(id){return S.adults.find(a=>a.id===id)}
 function childById(id){return S.children.find(c=>c.id===id)}
 
 // FIREBASE
-let db=null,docRef=null,_fbWritePending=false,_fbDebounce;
+const DIRTY_KEY=LS_KEY+'_dirty';
+let db=null,docRef=null,_fbDebounce,_fbRetry=0;
+// _dirty = o localStorage tem alterações que ainda não subiram para o Firestore.
+// Fica gravado no próprio localStorage para que, mesmo depois de recarregar a
+// página, o dado do servidor não sobrescreva uma edição que nunca foi salva.
+let _dirty=(()=>{try{return localStorage.getItem(DIRTY_KEY)==='1'}catch{return false}})();
+function setDirty(v){_dirty=v;try{v?localStorage.setItem(DIRTY_KEY,'1'):localStorage.removeItem(DIRTY_KEY);}catch{}}
 if(FB_ON){
   try{
     firebase.initializeApp(FB_CONFIG);
@@ -351,25 +357,37 @@ if(FB_ON){
     docRef=db.collection('festa').doc('vicente');
     docRef.onSnapshot(snap=>{
       if(!snap.exists)return;
-      if(_fbWritePending)return;
+      // Enquanto houver alteração local não confirmada, o que está na tela vale
+      // mais que o servidor — aplicar o remoto aqui apagaria a edição do usuário.
+      if(_dirty)return;
       const remote=migrate(snap.data());
       if(JSON.stringify(remote)!==JSON.stringify(S)){S=remote;saveLocal();renderAll();}
       setSyncSt('ok','Sincronizado');
-    },()=>setSyncSt('err','Erro de conexão'));
-    setSyncSt('syncing','Conectando...');
+    },e=>{setSyncSt('err','Erro de conexão');console.error(e)});
+    if(_dirty){setSyncSt('err','Alterações não salvas');syncToFB();}
+    else setSyncSt('syncing','Conectando...');
   }catch(e){setSyncSt('err','Firebase inválido');console.error(e)}
 }
 function syncToFB(){
-  if(!FB_ON||!docRef)return;
-  setSyncSt('syncing','Salvando...');_fbWritePending=true;clearTimeout(_fbDebounce);
+  if(!FB_ON||!docRef){setDirty(false);return;}
+  setSyncSt('syncing','Salvando...');clearTimeout(_fbDebounce);
   _fbDebounce=setTimeout(async()=>{
-    try{await docRef.set(S);setSyncSt('ok','Sincronizado');}
-    catch(e){setSyncSt('err','Erro ao salvar');console.error(e);}
-    finally{setTimeout(()=>{_fbWritePending=false;},800);}
+    try{
+      await docRef.set(S);
+      setDirty(false);_fbRetry=0;setSyncSt('ok','Sincronizado');
+    }catch(e){
+      console.error(e);
+      const denied=e&&(e.code==='permission-denied'||e.code==='unauthenticated');
+      setSyncSt('err',denied?'Sem permissão para salvar':'Alterações não salvas');
+      notify(denied
+        ?'Salvo só neste aparelho: o Firestore recusou a gravação (regras de segurança).'
+        :'Salvo só neste aparelho: falha ao sincronizar, tentando de novo...','err');
+      if(!denied&&_fbRetry<4){_fbRetry++;setTimeout(syncToFB,2000*_fbRetry);}
+    }
   },1000);
 }
 function setSyncSt(type,msg){const el=document.getElementById('sync-st');if(!el)return;el.className='sync-st '+type;el.textContent={ok:'● '+msg,syncing:'⟳ '+msg,err:'✕ '+msg}[type]||msg}
-function save(){saveLocal();syncToFB();}
+function save(){setDirty(true);saveLocal();syncToFB();}
 
 // GROUPS (agrupa adultos que compartilham os mesmos filhos)
 function getGroups(catId){
