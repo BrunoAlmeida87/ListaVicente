@@ -369,7 +369,13 @@ if(FB_ON){
   }catch(e){setSyncSt('err','Firebase inválido');console.error(e)}
 }
 function syncToFB(){
-  if(!FB_ON||!docRef){setDirty(false);return;}
+  // Sem Firebase configurado o site é só local: não existe servidor para
+  // sobrescrever o dado, então a pendência não tem sentido.
+  if(!FB_ON){setDirty(false);return;}
+  // Firebase configurado mas sem docRef (SDK não carregou, initializeApp falhou):
+  // manter a pendência. Limpar aqui faria o servidor sobrescrever, num reload em
+  // que o Firebase suba normalmente, tudo o que foi editado durante a falha.
+  if(!docRef){setSyncSt('err','Alterações não salvas');return;}
   setSyncSt('syncing','Salvando...');clearTimeout(_fbDebounce);
   _fbDebounce=setTimeout(async()=>{
     try{
